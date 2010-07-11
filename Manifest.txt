@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Main-Class: JTimeSchedApp
+Sealed: true
+Name: /
+Specification-Title: Time schedule management application
+Specification-Version: 1.0
+Specification-Vendor: Dominik Geyer
+Implementation-Title: jTimeSched
+Implementation-Version: 1.0
+Implementation-Vendor: Dominik Geyer
+
+
