@@ -137,10 +137,14 @@ public class Project implements Serializable {
 		String strStartDay = sdf.format(this.timeStart);
 		
 		if (!strCurrentDay.equals(strStartDay)) {
-			this.secondsToday = 0;
-			
-			System.out.println("Resetting today's seconds");
+			this.resetToday();
 		}
+	}
+	
+	public void resetToday() {
+		this.secondsToday = 0;
+		
+		System.out.println("Resetting today's seconds");
 	}
 	
 	

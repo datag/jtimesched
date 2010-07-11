@@ -365,6 +365,29 @@ public class JTimeSchedFrame extends JFrame {
 			case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
 				handleStartPause(tstm, prj, row, column);
 				break;
+			case TimeSchedTableModel.COLUMN_TIMETODAY:
+				// reset today's time on double-click
+				if (e.getClickCount() == 2) {
+					int response = JOptionPane.showConfirmDialog(JTimeSchedFrame.this,
+							"Reset time of project \"" + prj.getTitle() + "\" for today?",
+							"Reset today time",
+							JOptionPane.YES_NO_OPTION);
+					
+					if (response != JOptionPane.YES_OPTION)
+						return;
+					
+					try {
+						if (prj.isRunning())
+							prj.pause();
+						prj.resetToday();
+					} catch (ProjectException e1) {
+						e1.printStackTrace();
+					}
+					
+					
+					((TimeSchedTableModel)tblSched.getModel()).fireTableRowsDeleted(row, row);
+				}
+				break;
 			}
 		}
 		
@@ -452,8 +475,8 @@ public class JTimeSchedFrame extends JFrame {
 							"jTimeSched\nVersion " +
 								JTimeSchedApp.APP_VERSION + "\n\n" +
 								"written by Dominik D. Geyer\n\n" +
-								"put under the GPLv3 license",
-							"jTimeSched About",
+								"released under the GPLv3 license",
+							"About jTimeSched",
 							JOptionPane.INFORMATION_MESSAGE,
 							new ImageIcon(JTimeSchedApp.IMAGES_PATH + "history.png"));
 				}
@@ -519,7 +542,6 @@ public class JTimeSchedFrame extends JFrame {
 				try {
 					p.pause();
 				} catch (ProjectException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
