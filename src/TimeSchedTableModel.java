@@ -108,7 +108,8 @@ public class TimeSchedTableModel extends AbstractTableModel {
 //		case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
 //			return String.class;
 		default:
-			return getValueAt(0, column).getClass();
+			return String.class;
+			//return getValueAt(0, column).getClass();   // DOES not work with sorter
 		}
 	}
 
@@ -133,5 +134,17 @@ public class TimeSchedTableModel extends AbstractTableModel {
 			break;
 		}
 	}
+	
+	public void addProject(Project p) {
+		this.arPrj.add(p);
+		this.fireTableRowsInserted(this.getRowCount() -1, this.getRowCount() -1);
+	}
 
+	public void removeProject(int row) {
+		Project p = this.getProjectAt(row);
+		this.arPrj.remove(p);
+		this.fireTableRowsDeleted(row, row);
+	}
+	
+	
 }

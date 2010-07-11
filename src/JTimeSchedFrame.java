@@ -385,7 +385,7 @@ public class JTimeSchedFrame extends JFrame {
 					}
 					
 					
-					((TimeSchedTableModel)tblSched.getModel()).fireTableRowsDeleted(row, row);
+					((TimeSchedTableModel)tblSched.getModel()).fireTableRowsUpdated(row, row);
 				}
 				break;
 			}
@@ -412,7 +412,7 @@ public class JTimeSchedFrame extends JFrame {
 		}
 		
 		// update all rows
-		tstm.fireTableRowsUpdated(0, tstm.getRowCount() -1);
+		this.updateSchedTable();
 	}
 	
 	public void handleDelete(TimeSchedTableModel tstm, Project prj, int row, int column) {
@@ -425,16 +425,13 @@ public class JTimeSchedFrame extends JFrame {
 		if (response != JOptionPane.YES_OPTION)
 			return;
 		
-		this.arPrj.remove(prj);
-		
-		((TimeSchedTableModel)this.tblSched.getModel()).fireTableRowsDeleted(row, row);
+		tstm.removeProject(row);
 	}
 
 	public void handleNewButton() {
 		Project prj = new Project("New project", ProjectPriority.MEDIUM);
-		arPrj.add(prj);
 		
-		((TimeSchedTableModel)this.tblSched.getModel()).fireTableDataChanged();
+		((TimeSchedTableModel)this.tblSched.getModel()).addProject(prj);
 	}
 	
 	public void trayIcon() {
