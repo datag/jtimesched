@@ -40,7 +40,13 @@ import javax.swing.table.TableColumnModel;
 
 
 public class JTimeSchedFrame extends JFrame {
-	static final int COLUMN_ICON_WIDTH = 22;
+	private static final int COLUMN_ICON_WIDTH = 22;
+	
+	private TrayIcon trayIcon;
+	private boolean trayRunningState = false;
+	private final Image trayDefaultImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history.png");
+	private final Image trayRunningImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history-active.png");
+	
 	private JTable tblSched;
 	private JLabel lblOverall;
 	private ArrayList<Project> arPrj = new ArrayList<Project>();
@@ -54,6 +60,9 @@ public class JTimeSchedFrame extends JFrame {
 		this.setPreferredSize(new Dimension(600, 200));
 		this.setMinimumSize(new Dimension(460, 150));
 		
+		
+		// create tray-icon
+		this.setupTrayIcon();
 		
 		
 		// load project-file
@@ -166,16 +175,37 @@ public class JTimeSchedFrame extends JFrame {
 		this.updateGUI();
 		
 		
-		// create tray-icon
-		this.trayIcon();
-		
-		
 		this.pack();
 	}
 	
 	protected void updateGUI() {
 		this.updateSchedTable();
 		this.updateStatsLabel();
+		
+		
+		
+		String strTray = "jTimeSched";
+		boolean running = false;
+		for (Project p: this.arPrj) {
+			if (p.isRunning()) {
+				running = true;
+				strTray += " - " + p.getTitle() + " " + this.formatSeconds(p.getSecondsToday());
+				break;
+			}
+		}
+		
+		this.trayIcon.setToolTip(strTray);
+		
+		
+		// only update tray-icon on change
+		if (this.trayRunningState != running) {
+			if (running)
+				this.trayIcon.setImage(this.trayRunningImage);
+			else
+				this.trayIcon.setImage(this.trayDefaultImage);
+			
+			this.trayRunningState = running;
+		}
 	}
 	
 	protected void updateSchedTable() {
@@ -315,13 +345,10 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
-	public void trayIcon() {
-		final TrayIcon trayIcon;
-
+	public void setupTrayIcon() {
 		if (SystemTray.isSupported()) {
 
 			SystemTray tray = SystemTray.getSystemTray();
-			Image image = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history.png");
 
 			//		    MouseListener mouseListener = new MouseListener() {
 			//		                
@@ -382,7 +409,7 @@ public class JTimeSchedFrame extends JFrame {
 			popup.add(itemExit);
 
 
-			trayIcon = new TrayIcon(image, "jTimeSched", popup);
+			trayIcon = new TrayIcon(this.trayDefaultImage, "jTimeSched", popup);
 
 			ActionListener actionListener = new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -435,7 +462,12 @@ public class JTimeSchedFrame extends JFrame {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-
+		
+		
+		if (SystemTray.isSupported())
+			SystemTray.getSystemTray().remove(this.trayIcon);
+		
+		
 		System.out.println("Exiting...");
 		System.exit(0);
 	}
