@@ -109,7 +109,6 @@ public class Project implements Serializable {
 			try {
 				seconds += this.getElapsedSeconds();
 			} catch (ProjectException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		
@@ -123,7 +122,6 @@ public class Project implements Serializable {
 			try {
 				seconds += this.getElapsedSeconds();
 			} catch (ProjectException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		

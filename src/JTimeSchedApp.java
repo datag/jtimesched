@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 public class JTimeSchedApp {
-	static public final String APP_VERSION = "0.2";
+	static public final String APP_VERSION = "0.3";
 	static public final String DATA_PATH = "data/";
 	static public final String IMAGES_PATH = DATA_PATH + "img/";
 	static public final String PRJ_FILE = "jTimeSched.projects";

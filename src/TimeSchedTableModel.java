@@ -1,14 +1,6 @@
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.table.AbstractTableModel;
 
 
@@ -104,12 +96,9 @@ public class TimeSchedTableModel extends AbstractTableModel {
 			return Integer.class;
 		case TimeSchedTableModel.COLUMN_CREATED:
 			return Date.class;
-//		case TimeSchedTableModel.COLUMN_ACTION_DELETE:
-//		case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
-//			return String.class;
 		default:
 			return String.class;
-			//return getValueAt(0, column).getClass();   // DOES not work with sorter
+			//return getValueAt(0, column).getClass();   // WARNING: sorter would throw exception!
 		}
 	}
 
