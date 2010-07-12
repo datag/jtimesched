@@ -10,10 +10,13 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,14 +58,16 @@ public class JTimeSchedFrame extends JFrame {
 		super("jTimeSched (" + JTimeSchedApp.APP_VERSION + ")");
 		
 		this.setIconImage(Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history.png"));
-		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
 		this.setPreferredSize(new Dimension(600, 200));
 		this.setMinimumSize(new Dimension(460, 150));
 		
 		
 		// create tray-icon
-		this.setupTrayIcon();
+		if (this.setupTrayIcon())
+			this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		else
+			this.addWindowListener(new JTimeSchedFrameWindowListener());
 		
 		
 		// load project-file
@@ -183,28 +188,30 @@ public class JTimeSchedFrame extends JFrame {
 		this.updateStatsLabel();
 		
 		
-		
-		String strTray = "jTimeSched";
-		boolean running = false;
-		for (Project p: this.arPrj) {
-			if (p.isRunning()) {
-				running = true;
-				strTray += " - " + p.getTitle() + " " + this.formatSeconds(p.getSecondsToday());
-				break;
+		// update system-tray
+		if (SystemTray.isSupported()) {
+			String strTray = "jTimeSched";
+			boolean running = false;
+			for (Project p: this.arPrj) {
+				if (p.isRunning()) {
+					running = true;
+					strTray += " - " + p.getTitle() + " " + this.formatSeconds(p.getSecondsToday());
+					break;
+				}
 			}
-		}
-		
-		this.trayIcon.setToolTip(strTray);
-		
-		
-		// only update tray-icon on change
-		if (this.trayRunningState != running) {
-			if (running)
-				this.trayIcon.setImage(this.trayRunningImage);
-			else
-				this.trayIcon.setImage(this.trayDefaultImage);
 			
-			this.trayRunningState = running;
+			this.trayIcon.setToolTip(strTray);
+			
+			
+			// only update tray-icon on change
+			if (this.trayRunningState != running) {
+				if (running)
+					this.trayIcon.setImage(this.trayRunningImage);
+				else
+					this.trayIcon.setImage(this.trayDefaultImage);
+				
+				this.trayRunningState = running;
+			}
 		}
 	}
 	
@@ -345,34 +352,10 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
-	public void setupTrayIcon() {
+	public boolean setupTrayIcon() {
 		if (SystemTray.isSupported()) {
-
 			SystemTray tray = SystemTray.getSystemTray();
-
-			//		    MouseListener mouseListener = new MouseListener() {
-			//		                
-			//		        public void mouseClicked(MouseEvent e) {
-			//		            System.out.println("Tray Icon - Mouse clicked!");                 
-			//		        }
-			//
-			//		        public void mouseEntered(MouseEvent e) {
-			//		            System.out.println("Tray Icon - Mouse entered!");                 
-			//		        }
-			//
-			//		        public void mouseExited(MouseEvent e) {
-			//		            System.out.println("Tray Icon - Mouse exited!");                 
-			//		        }
-			//
-			//		        public void mousePressed(MouseEvent e) {
-			//		            System.out.println("Tray Icon - Mouse pressed!");                 
-			//		        }
-			//
-			//		        public void mouseReleased(MouseEvent e) {
-			//		            System.out.println("Tray Icon - Mouse released!");                 
-			//		        }
-			//		    };
-
+			
 			ActionListener aboutListener = new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 
@@ -436,11 +419,14 @@ public class JTimeSchedFrame extends JFrame {
 				tray.add(trayIcon);
 			} catch (AWTException e) {
 				System.err.println("TrayIcon could not be added.");
+				return false;
 			}
-
+			
+			return true;
 		} else {
 			//  System Tray is not supported
 			System.err.println("TrayIcon is not supported.");
+			return false;
 		}
 
 	}
@@ -472,7 +458,17 @@ public class JTimeSchedFrame extends JFrame {
 		System.exit(0);
 	}
 	
-	
+	class JTimeSchedFrameWindowListener extends WindowAdapter {
+		@Override
+		public void windowClosing(WindowEvent e) {
+
+			Window window = e.getWindow();
+			window.setVisible(false);
+			window.dispose();
+			
+			cleanExit();
+		}
+	}
 	
 	class CustomCellRenderer extends JLabel implements TableCellRenderer {
 		public CustomCellRenderer() {
