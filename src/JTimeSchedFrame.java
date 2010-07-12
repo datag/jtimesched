@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -42,6 +44,7 @@ import javax.swing.table.TableColumnModel;
 public class JTimeSchedFrame extends JFrame {
 	
 	private JTable tblSched;
+	private JLabel lblOverall;
 	private ArrayList<Project> arPrj = new ArrayList<Project>();
 	
 	public JTimeSchedFrame() {
@@ -53,6 +56,7 @@ public class JTimeSchedFrame extends JFrame {
 		//this.addWindowListener(new JTimeSchedFrameWindowListener());
 		
 		this.setPreferredSize(new Dimension(600, 200));
+		this.setMinimumSize(new Dimension(400, 150));
 		
 		
 		File file = new File(JTimeSchedApp.PRJ_FILE);
@@ -112,8 +116,8 @@ public class JTimeSchedFrame extends JFrame {
 				{TimeSchedTableModel.COLUMN_TITLE,			200,	100,		-1},
 				//{TimeSchedTableModel.COLUMN_PRIORITY,		-1,		80,		80},
 				{TimeSchedTableModel.COLUMN_CREATED,		-1,		80,		80},
-				{TimeSchedTableModel.COLUMN_TIMEOVERALL,	60,		55,		-1},
-				{TimeSchedTableModel.COLUMN_TIMETODAY,		60,		55,		-1},
+				{TimeSchedTableModel.COLUMN_TIMEOVERALL,	80,		55,		80},
+				{TimeSchedTableModel.COLUMN_TIMETODAY,		80,		55,		80},
 				{TimeSchedTableModel.COLUMN_ACTION_DELETE,		-1,		columnWidthIcon,	columnWidthIcon},
 				{TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE,	-1,		columnWidthIcon,	columnWidthIcon},
 		};
@@ -158,7 +162,8 @@ public class JTimeSchedFrame extends JFrame {
 
 		
 		JPanel panelBottom = new JPanel();
-		panelBottom.setLayout(new FlowLayout(FlowLayout.LEFT));
+		//panelBottom.setLayout(new FlowLayout(FlowLayout.LEFT));
+		panelBottom.setLayout(new BoxLayout(panelBottom, BoxLayout.LINE_AXIS));
 		JButton btnAdd = new JButton("Add project", new ImageIcon(JTimeSchedApp.IMAGES_PATH + "history-add.png"));
 		btnAdd.addActionListener(new ActionListener() {
 			@Override
@@ -168,6 +173,12 @@ public class JTimeSchedFrame extends JFrame {
 		});
 		
 		panelBottom.add(btnAdd);
+		
+		panelBottom.add(Box.createHorizontalGlue());
+		
+		this.lblOverall = new JLabel("", SwingConstants.RIGHT);
+		panelBottom.add(this.lblOverall);
+		
 		this.add(panelBottom, BorderLayout.SOUTH);
 
 
@@ -175,7 +186,7 @@ public class JTimeSchedFrame extends JFrame {
 		Timer timer = new Timer(1000, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				updateSchedTable();
+				updateGUI();
 			}
 		});
 		
@@ -184,7 +195,7 @@ public class JTimeSchedFrame extends JFrame {
 		
 		
 		// initially update table
-		this.updateSchedTable();
+		this.updateGUI();
 		
 		
 		// create tray-icon
@@ -194,12 +205,25 @@ public class JTimeSchedFrame extends JFrame {
 		this.pack();
 	}
 	
-	protected void updateSchedTable() {
+	protected void updateGUI() {
 		TimeSchedTableModel tstm = (TimeSchedTableModel)tblSched.getModel();
 		
 		int rowCount = tstm.getRowCount();
 		if (rowCount > 0)
 			tstm.fireTableRowsUpdated(0, rowCount -1);
+		
+		int timeOverall = 0;
+		int timeToday = 0;
+		for (Project p: this.arPrj) {
+			timeOverall += p.getSecondsOverall();
+			timeToday += p.getSecondsToday();
+		}
+		
+		this.lblOverall.setText(
+				String.format("%d projects | %s overall | %s today ",
+						rowCount,
+						this.formatSeconds(timeOverall),
+						this.formatSeconds(timeToday)));
 	}
 	
 	
@@ -411,8 +435,8 @@ public class JTimeSchedFrame extends JFrame {
 			ex.printStackTrace();
 		}
 		
-		// update all rows
-		this.updateSchedTable();
+		// update GUI
+		this.updateGUI();
 	}
 	
 	public void handleDelete(TimeSchedTableModel tstm, Project prj, int row, int column) {
