@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
+import java.awt.Rectangle;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
@@ -32,6 +33,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
@@ -56,7 +58,7 @@ public class JTimeSchedFrame extends JFrame {
 		//this.addWindowListener(new JTimeSchedFrameWindowListener());
 		
 		this.setPreferredSize(new Dimension(600, 200));
-		this.setMinimumSize(new Dimension(400, 150));
+		this.setMinimumSize(new Dimension(460, 150));
 		
 		
 		File file = new File(JTimeSchedApp.PRJ_FILE);
@@ -98,6 +100,7 @@ public class JTimeSchedFrame extends JFrame {
 		//this.tblSched.setShowHorizontalLines(true);
 		this.tblSched.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.tblSched.setAutoCreateRowSorter(true);
+		//this.tblSched.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE); // not needed?
 		
 		this.tblSched.getTableHeader().setReorderingAllowed(false);
 		
@@ -455,7 +458,28 @@ public class JTimeSchedFrame extends JFrame {
 	public void handleNewButton() {
 		Project prj = new Project("New project", ProjectPriority.MEDIUM);
 		
-		((TimeSchedTableModel)this.tblSched.getModel()).addProject(prj);
+		TimeSchedTableModel tstm = (TimeSchedTableModel)this.tblSched.getModel();
+		tstm.addProject(prj);
+		
+		
+		// get recently added row (view index)
+		int row = this.tblSched.convertRowIndexToView(tstm.getRowCount() - 1);
+		
+		// start editing cell
+		this.tblSched.editCellAt(row, TimeSchedTableModel.COLUMN_TITLE);
+		
+		// scroll to row/cell
+		this.tblSched.changeSelection(row, TimeSchedTableModel.COLUMN_TITLE, false, false);
+
+		// select all text if component is a textfield
+		Component ec = this.tblSched.getEditorComponent();
+		if (ec instanceof JTextField) {
+			JTextField tf = (JTextField) ec;
+			tf.selectAll();
+		}
+		
+		// set input focus on edit-cell
+		ec.requestFocusInWindow();
 	}
 	
 	public void trayIcon() {
