@@ -92,8 +92,8 @@ public class JTimeSchedFrame extends JFrame {
 				{TimeSchedTableModel.COLUMN_TITLE,			200,	100,		-1},
 				//{TimeSchedTableModel.COLUMN_PRIORITY,		-1,		80,		80},
 				{TimeSchedTableModel.COLUMN_CREATED,		-1,		80,		80},
-				{TimeSchedTableModel.COLUMN_TIMEOVERALL,	80,		60,		80},
-				{TimeSchedTableModel.COLUMN_TIMETODAY,		80,		60,		80},
+				{TimeSchedTableModel.COLUMN_TIMEOVERALL,	95,		60,		95},
+				{TimeSchedTableModel.COLUMN_TIMETODAY,		95,		60,		95},
 				{TimeSchedTableModel.COLUMN_ACTION_DELETE,		-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
 				{TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE,	-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
 		};
@@ -240,14 +240,14 @@ public class JTimeSchedFrame extends JFrame {
 	
 	
 	public void handleDelete(TimeSchedTableModel tstm, Project prj, int row, int column) {
-		int response = JOptionPane.showConfirmDialog(
-				this,
-				"Remove project \"" + prj.getTitle() + "\" from list?",
-				"Remove project?",
-				JOptionPane.YES_NO_OPTION);
-		
-		if (response != JOptionPane.YES_OPTION)
-			return;
+//		int response = JOptionPane.showConfirmDialog(
+//				this,
+//				"Remove project \"" + prj.getTitle() + "\" from list?",
+//				"Remove project?",
+//				JOptionPane.YES_NO_OPTION);
+//		
+//		if (response != JOptionPane.YES_OPTION)
+//			return;
 		
 		tstm.removeProject(row);
 		
@@ -574,7 +574,8 @@ public class JTimeSchedFrame extends JFrame {
 			
 			switch (column) {
 			case TimeSchedTableModel.COLUMN_ACTION_DELETE:
-				handleDelete(tstm, prj, row, column);
+				if (e.getClickCount() == 2)
+					handleDelete(tstm, prj, row, column);
 				break;
 			case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
 				handleStartPause(tstm, prj, row, column);
