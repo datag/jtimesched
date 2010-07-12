@@ -15,20 +15,24 @@ public class JTimeSchedApp {
 	static public final String DATA_PATH = "data/";
 	static public final String IMAGES_PATH = DATA_PATH + "img/";
 	static public final String PRJ_FILE = "jTimeSched.projects";
+	static public final String LOCK_FILE = "jTimeSched.lock";
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		
-		String lockFile = "jTimeSched.lock";
-		if (!JTimeSchedApp.lockInstance(lockFile)) {
+		if (!JTimeSchedApp.lockInstance()) {
 			JOptionPane.showMessageDialog(null,
-					"There is already an instance of jTimeSched running. " +
-					"It's not possible to run multiple instances.\n\n" +
-					"If there's no other instance running, try to delete the lock-file '" + lockFile + "'.",
+					"It seems that there is already a running instance of jTimeSched " +
+					"using the project-file in use.\n\n" +
+					"Possible solutions:\n" +
+					"1) Most likely you want to use the running instance residing in the system-tray.\n" +
+					"2) Run another instance from within a different directory.\n" +
+					"3) Delete the lock-file '" + JTimeSchedApp.LOCK_FILE + "' manually if it is a leftover caused by an unclean shutdown.\n\n" +
+					"jTimeSched will exit now.",
 					"Another running instance detected",
-					JOptionPane.ERROR_MESSAGE);
+					JOptionPane.WARNING_MESSAGE);
 			
 			System.exit(1);
 		}
@@ -39,9 +43,9 @@ public class JTimeSchedApp {
 	}
 	
 	
-	private static boolean lockInstance(final String lockFile) {
+	private static boolean lockInstance() {
 		try {
-			final File file = new File(lockFile);
+			final File file = new File(JTimeSchedApp.LOCK_FILE);
 			final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
 			final FileLock fileLock = randomAccessFile.getChannel().tryLock();
 			if (fileLock != null) {
@@ -52,14 +56,14 @@ public class JTimeSchedApp {
 							randomAccessFile.close();
 							file.delete();
 						} catch (Exception e) {
-							System.err.println("Unable to remove lock file: " + lockFile + " " + e.getMessage());
+							System.err.println("Unable to remove lock file: " + JTimeSchedApp.LOCK_FILE + " " + e.getMessage());
 						}
 					}
 				});
 				return true;
 			}
 		} catch (Exception e) {
-			System.err.println("Unable to create and/or lock file: " + lockFile + " " + e.getMessage());
+			System.err.println("Unable to create and/or lock file: " + JTimeSchedApp.LOCK_FILE + " " + e.getMessage());
 		}
 		return false;
 	}

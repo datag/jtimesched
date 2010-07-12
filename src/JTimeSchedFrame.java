@@ -197,7 +197,7 @@ public class JTimeSchedFrame extends JFrame {
 		timer.start();
 		
 		
-		// initially update table
+		// initially refresh GUI values
 		this.updateGUI();
 		
 		
@@ -209,26 +209,40 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	protected void updateGUI() {
+		this.updateSchedTable();
+		this.updateStatsLabel();
+	}
+	
+	protected void updateSchedTable() {
 		TimeSchedTableModel tstm = (TimeSchedTableModel)tblSched.getModel();
-		
+
 		int rowCount = tstm.getRowCount();
 		if (rowCount > 0)
 			tstm.fireTableRowsUpdated(0, rowCount -1);
-		
-		int timeOverall = 0;
-		int timeToday = 0;
-		for (Project p: this.arPrj) {
-			timeOverall += p.getSecondsOverall();
-			timeToday += p.getSecondsToday();
-		}
-		
-		this.lblOverall.setText(
-				String.format("%d projects | %s overall | %s today ",
-						rowCount,
-						this.formatSeconds(timeOverall),
-						this.formatSeconds(timeToday)));
 	}
 	
+	protected void updateStatsLabel() {
+		int projectCount = this.arPrj.size();
+		
+		// bottom stats label
+		String strStats = ""/*"no projects"*/;
+		if (projectCount > 0) {
+			int timeOverall = 0;
+			int timeToday = 0;
+			for (Project p: this.arPrj) {
+				timeOverall += p.getSecondsOverall();
+				timeToday += p.getSecondsToday();
+			}
+
+			strStats = String.format("%d project%s | %s overall | %s today",
+					projectCount,
+					(projectCount == 1) ? "" : "s",
+							this.formatSeconds(timeOverall),
+							this.formatSeconds(timeToday));
+		}
+
+		this.lblOverall.setText(strStats + " ");
+	}
 	
 //	class JTimeSchedFrameWindowListener extends WindowAdapter {
 //		@Override
@@ -438,21 +452,23 @@ public class JTimeSchedFrame extends JFrame {
 			ex.printStackTrace();
 		}
 		
-		// update GUI
-		this.updateGUI();
+		// update table
+		this.updateSchedTable();
 	}
 	
 	public void handleDelete(TimeSchedTableModel tstm, Project prj, int row, int column) {
 		int response = JOptionPane.showConfirmDialog(
 				this,
-				"Delete project \"" + prj.getTitle() + "\"?",
-				"Delete position?",
+				"Remove project \"" + prj.getTitle() + "\" from list?",
+				"Remove project?",
 				JOptionPane.YES_NO_OPTION);
 		
 		if (response != JOptionPane.YES_OPTION)
 			return;
 		
 		tstm.removeProject(row);
+		
+		this.updateStatsLabel();
 	}
 
 	public void handleNewButton() {
@@ -480,6 +496,9 @@ public class JTimeSchedFrame extends JFrame {
 		
 		// set input focus on edit-cell
 		ec.requestFocusInWindow();
+		
+		
+		this.updateStatsLabel();
 	}
 	
 	public void trayIcon() {
