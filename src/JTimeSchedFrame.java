@@ -286,6 +286,35 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
+	public void handleTimeReset(Project prj, int row, int column) {
+		int response = JOptionPane.showConfirmDialog(JTimeSchedFrame.this,
+				"Reset " + (column == TimeSchedTableModel.COLUMN_TIMETODAY ? "today" : "overall") +  
+				" time of project \"" + prj.getTitle() + "\"?",
+				"Reset time?",
+				JOptionPane.YES_NO_OPTION);
+		
+		if (response != JOptionPane.YES_OPTION)
+			return;
+		
+		try {
+			if (prj.isRunning())
+				prj.pause();
+			
+			if (column == TimeSchedTableModel.COLUMN_TIMETODAY)
+				prj.resetToday();
+			else
+				prj.resetOverall();
+		} catch (ProjectException e1) {
+			e1.printStackTrace();
+		}
+		
+		
+		((TimeSchedTableModel)tblSched.getModel()).fireTableRowsUpdated(row, row);
+		
+		updateStatsLabel();
+	}
+	
+	
 	public void trayIcon() {
 		final TrayIcon trayIcon;
 
@@ -550,28 +579,11 @@ public class JTimeSchedFrame extends JFrame {
 			case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
 				handleStartPause(tstm, prj, row, column);
 				break;
+			case TimeSchedTableModel.COLUMN_TIMEOVERALL:
 			case TimeSchedTableModel.COLUMN_TIMETODAY:
-				// reset today's time on double-click
-				if (e.getClickCount() == 2) {
-					int response = JOptionPane.showConfirmDialog(JTimeSchedFrame.this,
-							"Reset time of project \"" + prj.getTitle() + "\" for today?",
-							"Reset today time",
-							JOptionPane.YES_NO_OPTION);
-					
-					if (response != JOptionPane.YES_OPTION)
-						return;
-					
-					try {
-						if (prj.isRunning())
-							prj.pause();
-						prj.resetToday();
-					} catch (ProjectException e1) {
-						e1.printStackTrace();
-					}
-					
-					
-					((TimeSchedTableModel)tblSched.getModel()).fireTableRowsUpdated(row, row);
-				}
+				// reset time on double-click
+				if (e.getClickCount() == 2)
+					handleTimeReset(prj, row, column);
 				break;
 			}
 		}

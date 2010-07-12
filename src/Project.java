@@ -139,12 +139,17 @@ public class Project implements Serializable {
 		}
 	}
 	
+	public void resetOverall() {
+		this.secondsOverall = 0;
+		
+		System.out.println("Resetting overall seconds");
+	}
+	
 	public void resetToday() {
 		this.secondsToday = 0;
 		
 		System.out.println("Resetting today's seconds");
 	}
-	
 	
 	// magic VM method for serialization
 	private void writeObject(ObjectOutputStream out) throws IOException {
