@@ -69,7 +69,7 @@ public class TimeSchedTableModel extends AbstractTableModel {
 			break;
 		case TimeSchedTableModel.COLUMN_ACTION_DELETE:
 		case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
-			o = ""; //(prj.isRunning()) ? "running" : "paused";
+			o = (prj.isRunning()) ? new String("running") : new String("paused");
 			break;
 		default:
 			o = "wtf?";
