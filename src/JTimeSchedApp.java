@@ -1,20 +1,15 @@
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
-import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
 public class JTimeSchedApp {
-	static public final String APP_VERSION = "0.3";
+	static public final String APP_VERSION = "0.4";
 	static public final String DATA_PATH = "data/";
 	static public final String IMAGES_PATH = DATA_PATH + "img/";
 	static public final String PRJ_FILE = "jTimeSched.projects";
+	static public final String SETTINGS_FILE = "jTimeSched.settings";
 	static public final String LOCK_FILE = "jTimeSched.lock";
 	
 	/**
@@ -37,9 +32,7 @@ public class JTimeSchedApp {
 			System.exit(1);
 		}
 		
-		new JTimeSchedFrame().setVisible(true);
-		
-		
+		new JTimeSchedFrame();
 	}
 	
 	
@@ -66,40 +59,5 @@ public class JTimeSchedApp {
 			System.err.println("Unable to create and/or lock file: " + JTimeSchedApp.LOCK_FILE + " " + e.getMessage());
 		}
 		return false;
-	}
-
-
-	static public ArrayList<Project> loadProjects() throws Exception {
-		ArrayList<Project> arPrj = null;
-		
-		FileInputStream fis = null;
-		ObjectInputStream in = null;
-		try {
-			fis = new FileInputStream(JTimeSchedApp.PRJ_FILE);
-			in = new ObjectInputStream(fis);
-			arPrj = (ArrayList<Project>) in.readObject();
-			in.close();
-			
-			//System.out.println(arPrj);
-		} catch(IOException ex) {
-			throw ex;
-		} catch(ClassNotFoundException ex) {
-			throw ex;
-		}
-		
-		return arPrj;
-	}
-	
-	static public void saveProjects(ArrayList<Project> arPrj) throws Exception {
-		FileOutputStream fos = null;
-		ObjectOutputStream out = null;
-		try	{
-			fos = new FileOutputStream(JTimeSchedApp.PRJ_FILE);
-			out = new ObjectOutputStream(fos);
-			out.writeObject(arPrj);
-			out.close();
-		} catch(IOException ex) {
-			throw ex;
-		}
 	}
 }

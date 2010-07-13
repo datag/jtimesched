@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.MenuItem;
+import java.awt.Point;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
@@ -18,6 +19,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,6 +63,8 @@ public class JTimeSchedFrame extends JFrame {
 	private JLabel lblOverall;
 	private ArrayList<Project> arPrj = new ArrayList<Project>();
 	
+	private boolean initiallyVisible = true;
+	
 	public JTimeSchedFrame() {
 		super("jTimeSched (" + JTimeSchedApp.APP_VERSION + ")");
 		
@@ -77,8 +85,7 @@ public class JTimeSchedFrame extends JFrame {
 		File file = new File(JTimeSchedApp.PRJ_FILE);
 		if (file.isFile()) {
 			try {
-				this.arPrj = JTimeSchedApp.loadProjects();
-				System.out.println(this.arPrj);
+				this.loadProjects();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -170,8 +177,15 @@ public class JTimeSchedFrame extends JFrame {
 		this.lblOverall = new JLabel("", SwingConstants.RIGHT);
 		panelBottom.add(this.lblOverall);
 		this.add(panelBottom, BorderLayout.SOUTH);
-
-
+		
+		
+		// load settings
+		try {
+			this.loadSettings();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		
 		// setup GUI update timer
 		Timer timer = new Timer(1000, new ActionListener() {
@@ -190,7 +204,11 @@ public class JTimeSchedFrame extends JFrame {
 		
 		
 		this.pack();
+		
+		
+		this.setVisible(this.initiallyVisible);
 	}
+	
 	
 	protected void updateGUI() {
 		this.updateSchedTable();
@@ -453,9 +471,15 @@ public class JTimeSchedFrame extends JFrame {
 		}
 
 		try {
-			JTimeSchedApp.saveProjects(arPrj);
+			this.saveProjects();
 		} catch (Exception e1) {
 			e1.printStackTrace();
+		}
+		
+		try {
+			this.saveSettings();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		
@@ -466,6 +490,95 @@ public class JTimeSchedFrame extends JFrame {
 		System.out.println("Exiting...");
 		System.exit(0);
 	}
+	
+	
+	public void loadProjects() throws Exception {
+		FileInputStream fis = null;
+		ObjectInputStream in = null;
+		try {
+			fis = new FileInputStream(JTimeSchedApp.PRJ_FILE);
+			in = new ObjectInputStream(fis);
+			this.arPrj = (ArrayList<Project>) in.readObject();
+			in.close();
+			
+			//System.out.println(arPrj);
+		} catch(IOException ex) {
+			throw ex;
+		} catch(ClassNotFoundException ex) {
+			throw ex;
+		}
+	}
+	
+	
+	public void saveProjects() throws Exception {
+		FileOutputStream fos = null;
+		ObjectOutputStream out = null;
+		try	{
+			fos = new FileOutputStream(JTimeSchedApp.PRJ_FILE);
+			out = new ObjectOutputStream(fos);
+			out.writeObject(this.arPrj);
+			out.close();
+		} catch(IOException ex) {
+			throw ex;
+		}
+	}
+	
+	
+	public void loadSettings() throws Exception {
+		FileInputStream fis = null;
+		ObjectInputStream in = null;
+		try {
+			fis = new FileInputStream(JTimeSchedApp.SETTINGS_FILE);
+			in = new ObjectInputStream(fis);
+			
+			String appVersion = in.readUTF();	// app-version
+			
+			Dimension size = (Dimension) in.readObject();
+			this.setSize(size);
+			this.setPreferredSize(size);
+			
+			this.setLocation((Point) in.readObject());
+			this.initiallyVisible = in.readBoolean();
+			
+			int sortColumn = in.readInt();
+			boolean sortAsc = in.readBoolean();
+			List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
+			sortKeys.add(new RowSorter.SortKey(sortColumn, sortAsc ? SortOrder.ASCENDING : SortOrder.DESCENDING));
+			this.tblSched.getRowSorter().setSortKeys(sortKeys);
+			
+			in.close();
+		} catch(IOException ex) {
+			throw ex;
+		} catch(ClassNotFoundException ex) {
+			throw ex;
+		}
+	}
+	
+	
+	public void saveSettings() throws Exception {
+		FileOutputStream fos = null;
+		ObjectOutputStream out = null;
+		try	{
+			fos = new FileOutputStream(JTimeSchedApp.SETTINGS_FILE);
+			out = new ObjectOutputStream(fos);
+			
+			out.writeUTF(JTimeSchedApp.APP_VERSION);
+			out.writeObject(this.getSize());
+			out.writeObject(this.getLocation());
+			out.writeBoolean(this.isVisible());
+			
+			List<RowSorter.SortKey> sortKeys =  (List<RowSorter.SortKey>) this.tblSched.getRowSorter().getSortKeys();
+			RowSorter.SortKey sortKey = sortKeys.get(0);
+			out.writeInt(sortKey.getColumn());
+			boolean sortAsc = (sortKey.getSortOrder() == SortOrder.ASCENDING) ? true : false;
+			out.writeBoolean(sortAsc);
+			
+			out.close();
+		} catch(IOException ex) {
+			throw ex;
+		}
+	}
+	
 	
 	class JTimeSchedFrameWindowListener extends WindowAdapter {
 		@Override
