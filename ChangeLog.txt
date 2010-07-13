@@ -1,0 +1,26 @@
+jTimeSched ChangeLog
+====================
+
+release 0.1
+	- everything
+
+release 0.2
+	- option for resetting today-time on double-click
+
+release 0.3
+	- fixed bug when column sorting was active and project-list became empty
+	- added history.ico (may be used for Windows shortcuts)
+	- set frame minimum width
+	- set fixed width for column overall and today
+	- added bottom label for displaying summarized information
+	- when adding a new project start editing the cell, scroll to it and select all text and finally set input focus
+	- improved user message strings
+	- implemented overall-time reset
+	- remove project with double click and without confirm-dialog
+	- update trayicon with status and set different icon if active
+	- handle system-tray not supported case
+
+release 0.4
+	- allow sorting by status running/paused
+	- save window settings: size, position, visibility and sort-column
+
