@@ -69,7 +69,7 @@ public class TimeSchedTableModel extends AbstractTableModel {
 			break;
 		case TimeSchedTableModel.COLUMN_ACTION_DELETE:
 		case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
-			o = (prj.isRunning()) ? new String("running") : new String("paused");
+			o = (prj.isRunning()) ? new Boolean(true) : new Boolean(false);
 			break;
 		default:
 			o = "wtf?";
@@ -96,6 +96,9 @@ public class TimeSchedTableModel extends AbstractTableModel {
 			return Integer.class;
 		case TimeSchedTableModel.COLUMN_CREATED:
 			return Date.class;
+		case TimeSchedTableModel.COLUMN_ACTION_DELETE:
+		case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
+			return Boolean.class;
 		default:
 			return String.class;
 			//return getValueAt(0, column).getClass();   // WARNING: sorter would throw exception!
