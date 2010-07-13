@@ -21,6 +21,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -34,6 +35,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.table.TableCellRenderer;
@@ -99,6 +102,12 @@ public class JTimeSchedFrame extends JFrame {
 		TableCellRenderer defaultRenderer = this.tblSched.getDefaultRenderer(Object.class);
 		this.tblSched.setDefaultRenderer(Object.class,
 				new TimeSchedTableCellRenderer(defaultRenderer));
+		
+		
+		// set default sort-column
+		List <RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
+		sortKeys.add(new RowSorter.SortKey(TimeSchedTableModel.COLUMN_CREATED, SortOrder.ASCENDING));
+		this.tblSched.getRowSorter().setSortKeys(sortKeys);
 		
 		
 		// define and set column properties
