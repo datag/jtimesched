@@ -24,13 +24,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -51,6 +55,7 @@ import javax.swing.table.TableColumnModel;
 
 
 
+@SuppressWarnings("serial")
 public class JTimeSchedFrame extends JFrame {
 	private static final int COLUMN_ICON_WIDTH = 22;
 	
@@ -145,7 +150,9 @@ public class JTimeSchedFrame extends JFrame {
 		// column specific cell-renderer
 		tcm.getColumn(TimeSchedTableModel.COLUMN_CREATED).setCellRenderer(new CustomCellRenderer());
 		tcm.getColumn(TimeSchedTableModel.COLUMN_TIMEOVERALL).setCellRenderer(new CustomCellRenderer());
+		tcm.getColumn(TimeSchedTableModel.COLUMN_TIMEOVERALL).setCellEditor(new TimeCellEditor());
 		tcm.getColumn(TimeSchedTableModel.COLUMN_TIMETODAY).setCellRenderer(new CustomCellRenderer());
+		tcm.getColumn(TimeSchedTableModel.COLUMN_TIMETODAY).setCellEditor(new TimeCellEditor());
 		tcm.getColumn(TimeSchedTableModel.COLUMN_ACTION_DELETE).setCellRenderer(new CustomCellRenderer());
 		tcm.getColumn(TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE).setCellRenderer(new CustomCellRenderer());
 		
@@ -277,10 +284,23 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
-	public String formatSeconds(int s) {
+	public static String formatSeconds(int s) {
 		return String.format("%d:%02d:%02d", s/3600, (s%3600)/60, (s%60));
 	}
 	
+	public static int parseSeconds(String strTime) throws ParseException {
+		 Pattern p = Pattern.compile("(\\d+):([0-5]?\\d):([0-5]?\\d)");	// 0:00:00
+		 Matcher m = p.matcher(strTime);
+		 
+		 if (!m.matches())
+			 throw new ParseException("Invalid seconds-string", 0);
+		 
+		 int hours = Integer.parseInt(m.group(1));
+		 int minutes = Integer.parseInt(m.group(2));
+		 int seconds = Integer.parseInt(m.group(3));
+		 
+		 return (hours * 3600 + minutes * 60 + seconds);
+	}
 	
 	public void handleStartPause(TimeSchedTableModel tstm, Project prj, int row, int column) {
 		try {
@@ -350,35 +370,6 @@ public class JTimeSchedFrame extends JFrame {
 		
 		
 		this.updateStatsLabel();
-	}
-	
-	
-	public void handleTimeReset(Project prj, int row, int column) {
-		int response = JOptionPane.showConfirmDialog(JTimeSchedFrame.this,
-				"Reset " + (column == TimeSchedTableModel.COLUMN_TIMETODAY ? "today" : "overall") +  
-				" time of project \"" + prj.getTitle() + "\"?",
-				"Reset time?",
-				JOptionPane.YES_NO_OPTION);
-		
-		if (response != JOptionPane.YES_OPTION)
-			return;
-		
-		try {
-			if (prj.isRunning())
-				prj.pause();
-			
-			if (column == TimeSchedTableModel.COLUMN_TIMETODAY)
-				prj.resetToday();
-			else
-				prj.resetOverall();
-		} catch (ProjectException e1) {
-			e1.printStackTrace();
-		}
-		
-		
-		((TimeSchedTableModel)tblSched.getModel()).fireTableRowsUpdated(row, row);
-		
-		updateStatsLabel();
 	}
 	
 	
@@ -700,6 +691,66 @@ public class JTimeSchedFrame extends JFrame {
 		}
 	}
 	
+//	class ColorCellEditor extends AbstractCellEditor implements TableCellEditor {
+//		JTextField tfEdit = new JTextField();
+//		
+//		@Override
+//		public Component getTableCellEditorComponent(JTable table, Object value,
+//				boolean isSelected, int row, int column) {
+//			
+//			String strTime = formatSeconds(((Integer)value).intValue());
+//			this.tfEdit.setText(strTime);
+//			
+//			return this.tfEdit;
+//		}
+//
+//		@Override
+//		public Object getCellEditorValue() {
+//			String strTime = this.tfEdit.getText();
+//			return new Integer(61); 
+//		}
+//	}
+	
+	class TimeCellEditor extends DefaultCellEditor {
+		private JTextField tfEdit;
+		private int oldSeconds;
+		
+		public TimeCellEditor() {
+			super(new JTextField());
+			this.tfEdit = (JTextField) this.getComponent();
+			this.tfEdit.setHorizontalAlignment(SwingConstants.RIGHT);
+		}
+
+		@Override
+		public Object getCellEditorValue() {
+			String strTime = this.tfEdit.getText();
+			int newSeconds = this.oldSeconds;
+			
+			if (strTime.isEmpty() || strTime.equals("0"))
+				newSeconds = 0;
+			else {
+				try {
+					newSeconds = parseSeconds(strTime);
+				} catch (ParseException e) {
+					System.err.println("Invalid seconds-string, keeping previous value");
+				}
+			}
+			
+			return newSeconds;
+		}
+
+		@Override
+		public Component getTableCellEditorComponent(JTable table,
+				Object value, boolean isSelected, int row, int column) {
+			this.oldSeconds = ((Integer)value).intValue();
+			String strTime = formatSeconds(this.oldSeconds);
+			this.tfEdit.setText(strTime);
+			
+			return this.tfEdit;
+		}
+		
+		
+	}
 	
 	class TimeSchedTableMouseListener extends MouseAdapter {
 
@@ -732,12 +783,6 @@ public class JTimeSchedFrame extends JFrame {
 				break;
 			case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
 				handleStartPause(tstm, prj, row, column);
-				break;
-			case TimeSchedTableModel.COLUMN_TIMEOVERALL:
-			case TimeSchedTableModel.COLUMN_TIMETODAY:
-				// reset time on double-click
-				if (e.getClickCount() == 2)
-					handleTimeReset(prj, row, column);
 				break;
 			}
 		}

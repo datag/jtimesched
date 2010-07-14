@@ -4,6 +4,7 @@ import java.util.Date;
 import javax.swing.table.AbstractTableModel;
 
 
+@SuppressWarnings("serial")
 public class TimeSchedTableModel extends AbstractTableModel {
 	private static final int COLUMN_COUNT = 6;
 	
@@ -108,9 +109,15 @@ public class TimeSchedTableModel extends AbstractTableModel {
 
 	@Override
 	public boolean isCellEditable(int row, int column) {
+		Project prj = this.getProjectAt(row);
+		
 		switch (column) {
 		case TimeSchedTableModel.COLUMN_TITLE:
 			return true;
+		case TimeSchedTableModel.COLUMN_TIMEOVERALL:
+		case TimeSchedTableModel.COLUMN_TIMETODAY:
+			// running tasks cannot be edited
+			return (prj.isRunning() ? false : true);
 		default:
 			return false;	
 		}
@@ -124,7 +131,15 @@ public class TimeSchedTableModel extends AbstractTableModel {
 		case TimeSchedTableModel.COLUMN_TITLE:
 			prj.setTitle((String)value);
 			break;
+		case TimeSchedTableModel.COLUMN_TIMEOVERALL:
+			prj.setSecondsOverall(((Integer)value).intValue());
+			break;
+		case TimeSchedTableModel.COLUMN_TIMETODAY:
+			prj.setSecondsToday(((Integer)value).intValue());
+			break;
 		}
+		
+		this.fireTableCellUpdated(row, column);
 	}
 	
 	public void addProject(Project p) {

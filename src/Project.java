@@ -4,7 +4,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 
 public class Project implements Serializable {
@@ -126,6 +125,22 @@ public class Project implements Serializable {
 			}
 		
 		return seconds;
+	}
+
+	
+	
+	public void setSecondsOverall(int secondsOverall) {
+		if (secondsOverall >= 0)
+			this.secondsOverall = secondsOverall;
+		else
+			this.secondsOverall = 0;
+	}
+
+	public void setSecondsToday(int secondsToday) {
+		if (secondsToday >= 0)
+			this.secondsToday = secondsToday;
+		else
+			this.secondsToday = 0;
 	}
 
 	protected void checkResetToday() {
