@@ -10,14 +10,13 @@ public class TimeSchedTableModel extends AbstractTableModel {
 	
 	public static final int COLUMN_ACTION_DELETE = 0;
 	public static final int COLUMN_TITLE = 1;
-	//public static final int COLUMN_PRIORITY = 2;
 	public static final int COLUMN_CREATED = 2;
 	public static final int COLUMN_TIMEOVERALL = 3;
 	public static final int COLUMN_TIMETODAY = 4;
 	public static final int COLUMN_ACTION_STARTPAUSE = 5;
 	
 	private String[] columnNames = new String[] {
-		"", "Title", /*"Priority",*/ "Created", "Time Overall", "Time Today", "",
+		"", "Title", "Created", "Time Overall", "Time Today", "",
 	};
 	
 	
@@ -47,18 +46,6 @@ public class TimeSchedTableModel extends AbstractTableModel {
 		case TimeSchedTableModel.COLUMN_TITLE:
 			o = prj.getTitle();
 			break;
-//		case TimeSchedTableModel.COLUMN_PRIORITY:
-//			//o = prj.getPriority();
-//			Vector<String> strPrio = new Vector<String>();
-//			int count = ProjectPriority.values().length;
-//			
-//			for (int i=0; i < count; i++)
-//				strPrio.add(ProjectPriority.values()[i].name());
-//			
-//			JComboBox cbPriority = new JComboBox(strPrio);
-//			
-//			o = cbPriority;
-//			break;
 		case TimeSchedTableModel.COLUMN_CREATED:
 			o = prj.getTimeCreated();
 			break;

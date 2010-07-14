@@ -125,7 +125,6 @@ public class JTimeSchedFrame extends JFrame {
 		// define and set column properties
 		int[][] columnWidths = new int[][] {
 				{TimeSchedTableModel.COLUMN_TITLE,			200,	100,		-1},
-				//{TimeSchedTableModel.COLUMN_PRIORITY,		-1,		80,		80},
 				{TimeSchedTableModel.COLUMN_CREATED,		-1,		80,		80},
 				{TimeSchedTableModel.COLUMN_TIMEOVERALL,	95,		60,		95},
 				{TimeSchedTableModel.COLUMN_TIMETODAY,		95,		60,		95},
@@ -343,7 +342,7 @@ public class JTimeSchedFrame extends JFrame {
 	
 	
 	public void handleNewButton() {
-		Project prj = new Project("New project", ProjectPriority.MEDIUM);
+		Project prj = new Project("New project");
 		
 		TimeSchedTableModel tstm = (TimeSchedTableModel)this.tblSched.getModel();
 		tstm.addProject(prj);

@@ -9,9 +9,7 @@ import java.util.Date;
 public class Project implements Serializable {
 	private static final long serialVersionUID = 1061321128496296078L;
 	
-	
 	private String title;
-	private ProjectPriority priority;
 	private Date timeCreated;
 	
 	public Date getTimeCreated() {
@@ -26,31 +24,11 @@ public class Project implements Serializable {
 	private Date timeStart;
 	
 	public Project(String name) {
-		this(name, ProjectPriority.MEDIUM);
-	}
-	
-	public Project(String name, ProjectPriority priority) {
 		this.title = name;
-		this.priority = priority;
 		
 		this.timeStart = new Date();
 		this.timeCreated = new Date();
 	}
-	
-	// debug ctor
-	public Project(String name, ProjectPriority priority, Date timeCreated, Date timeStart,
-			boolean running, int secondsOverall, int secondsToday) {
-		this(name, priority);
-		
-		this.timeCreated = timeCreated;
-		this.timeStart = timeStart;
-		this.running = running;
-		this.secondsOverall = secondsOverall;
-		this.secondsToday = secondsToday;
-		
-		this.checkResetToday();
-	}
-	
 	
 	public String getTitle() {
 		return title;
@@ -58,14 +36,6 @@ public class Project implements Serializable {
 
 	public void setTitle(String name) {
 		this.title = name;
-	}
-
-	public ProjectPriority getPriority() {
-		return priority;
-	}
-
-	public void setPriority(ProjectPriority priority) {
-		this.priority = priority;
 	}
 
 	public boolean isRunning() {
@@ -182,8 +152,8 @@ public class Project implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Project [name=" + title + ", priority=" + priority
-				+ ", running=" + running + ", timeStart=" + timeStart + "]";
+		return "Project [name=" + title +
+				", running=" + running + ", timeStart=" + timeStart + "]";
 	}
 	
 	
