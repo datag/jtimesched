@@ -367,14 +367,15 @@ public class JTimeSchedFrame extends JFrame {
 
 		// select all text if component is a textfield
 		Component ec = this.tblSched.getEditorComponent();
-		if (ec instanceof JTextField) {
-			JTextField tf = (JTextField) ec;
-			tf.selectAll();
+		if (ec != null) {
+			if (ec instanceof JTextField) {
+				JTextField tf = (JTextField) ec;
+				tf.selectAll();
+			}
+			
+			// set input focus on edit-cell
+			ec.requestFocusInWindow();
 		}
-		
-		// set input focus on edit-cell
-		ec.requestFocusInWindow();
-		
 		
 		this.updateStatsLabel();
 	}
