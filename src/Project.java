@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -11,12 +12,8 @@ public class Project implements Serializable {
 	
 	private String title;
 	private Date timeCreated;
+	private Color color;
 	
-	public Date getTimeCreated() {
-		return timeCreated;
-	}
-
-
 	private int secondsOverall;
 	private int secondsToday;
 	
@@ -25,6 +22,7 @@ public class Project implements Serializable {
 	
 	public Project(String name) {
 		this.title = name;
+		this.color = null;
 		
 		this.timeStart = new Date();
 		this.timeCreated = new Date();
@@ -33,13 +31,25 @@ public class Project implements Serializable {
 	public String getTitle() {
 		return title;
 	}
-
+	
 	public void setTitle(String name) {
 		this.title = name;
 	}
-
+	
+	public Date getTimeCreated() {
+		return timeCreated;
+	}
+	
 	public boolean isRunning() {
 		return this.running;
+	}
+	
+	public Color getColor() {
+		return color;
+	}
+	
+	public void setColor(Color color) {
+		this.color = color;
 	}
 	
 	protected int getElapsedSeconds() throws ProjectException {
@@ -155,6 +165,4 @@ public class Project implements Serializable {
 		return "Project [name=" + title +
 				", running=" + running + ", timeStart=" + timeStart + "]";
 	}
-	
-	
 }

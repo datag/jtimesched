@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.AbstractCellEditor;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
@@ -49,6 +51,9 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -61,8 +66,8 @@ public class JTimeSchedFrame extends JFrame {
 	
 	private TrayIcon trayIcon;
 	private boolean trayRunningState = false;
-	private final Image trayDefaultImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history.png");
-	private final Image trayRunningImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history-active.png");
+	private final Image trayDefaultImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history-inactive.png");
+	private final Image trayRunningImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history.png");
 	
 	private JTable tblSched;
 	private JLabel lblOverall;
@@ -77,7 +82,6 @@ public class JTimeSchedFrame extends JFrame {
 		
 		this.setPreferredSize(new Dimension(600, 200));
 		this.setMinimumSize(new Dimension(460, 150));
-		
 		
 		// create tray-icon
 		if (this.setupTrayIcon())
@@ -125,6 +129,7 @@ public class JTimeSchedFrame extends JFrame {
 		// define and set column properties
 		int[][] columnWidths = new int[][] {
 				{TimeSchedTableModel.COLUMN_TITLE,			200,	100,		-1},
+				{TimeSchedTableModel.COLUMN_COLOR,			-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
 				{TimeSchedTableModel.COLUMN_CREATED,		-1,		80,		80},
 				{TimeSchedTableModel.COLUMN_TIMEOVERALL,	95,		60,		95},
 				{TimeSchedTableModel.COLUMN_TIMETODAY,		95,		60,		95},
@@ -147,6 +152,8 @@ public class JTimeSchedFrame extends JFrame {
 		}
 		
 		// column specific cell-renderer
+		tcm.getColumn(TimeSchedTableModel.COLUMN_COLOR).setCellRenderer(new ColorCellRenderer());
+		tcm.getColumn(TimeSchedTableModel.COLUMN_COLOR).setCellEditor(new ColorCellEditor());
 		tcm.getColumn(TimeSchedTableModel.COLUMN_CREATED).setCellRenderer(new CustomCellRenderer());
 		tcm.getColumn(TimeSchedTableModel.COLUMN_TIMEOVERALL).setCellRenderer(new CustomCellRenderer());
 		tcm.getColumn(TimeSchedTableModel.COLUMN_TIMEOVERALL).setCellEditor(new TimeCellEditor());
@@ -181,6 +188,7 @@ public class JTimeSchedFrame extends JFrame {
 		// bottom statistics label
 		panelBottom.add(Box.createHorizontalGlue());
 		this.lblOverall = new JLabel("", SwingConstants.RIGHT);
+		this.lblOverall.setFont(this.lblOverall.getFont().deriveFont(Font.PLAIN));
 		panelBottom.add(this.lblOverall);
 		this.add(panelBottom, BorderLayout.SOUTH);
 		
@@ -648,6 +656,31 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
+	class ColorCellRenderer extends JLabel implements TableCellRenderer {
+		
+		public ColorCellRenderer() {
+			this.setOpaque(true);
+		}
+		
+		@Override
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+			
+			if (value != null) {
+				this.setBackground((Color) value);
+				this.setBorder(new LineBorder(Color.WHITE, 1));
+			}
+			else {
+				this.setBackground(table.getBackground());
+				this.setBorder(null);
+			}
+			
+			return this;
+		}
+	}
+	
+	
 	class TimeSchedTableCellRenderer implements TableCellRenderer {
 		private TableCellRenderer defaultRenderer;
 
@@ -690,25 +723,67 @@ public class JTimeSchedFrame extends JFrame {
 		}
 	}
 	
-//	class ColorCellEditor extends AbstractCellEditor implements TableCellEditor {
-//		JTextField tfEdit = new JTextField();
-//		
-//		@Override
-//		public Component getTableCellEditorComponent(JTable table, Object value,
-//				boolean isSelected, int row, int column) {
-//			
-//			String strTime = formatSeconds(((Integer)value).intValue());
-//			this.tfEdit.setText(strTime);
-//			
-//			return this.tfEdit;
-//		}
-//
-//		@Override
-//		public Object getCellEditorValue() {
-//			String strTime = this.tfEdit.getText();
-//			return new Integer(61); 
-//		}
-//	}
+	class ColorCellEditor extends AbstractCellEditor implements TableCellEditor, MouseListener {
+		JButton btnEdit;
+		Color currentColor;
+		Color selectedColor;
+		
+		public ColorCellEditor() {
+			this.btnEdit = new JButton();
+			this.btnEdit.addMouseListener(this);
+		}
+		
+		@Override
+		public Component getTableCellEditorComponent(JTable table, Object value,
+				boolean isSelected, int row, int column) {
+			
+			this.currentColor = (Color) value;
+			
+			return this.btnEdit;
+		}
+
+		@Override
+		public Object getCellEditorValue() {
+			return this.selectedColor; 
+		}
+		
+		@Override
+		public void mousePressed(MouseEvent e) {
+			this.btnEdit.setBackground(this.currentColor);
+			
+			Point posClick = e.getLocationOnScreen();
+			ColorDialog colorDialog = new ColorDialog(JTimeSchedFrame.this,
+					posClick,
+					this.currentColor);
+			
+			colorDialog.setVisible(true);
+			this.selectedColor = colorDialog.getSelectedColor();
+			
+			this.fireEditingStopped();
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent arg0) {}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {}
+
+		@Override
+		public void cancelCellEditing() {
+			
+			super.cancelCellEditing();
+			
+			System.out.println("canel");
+		}
+		
+		
+	}
 	
 	class TimeCellEditor extends DefaultCellEditor {
 		private JTextField tfEdit;
