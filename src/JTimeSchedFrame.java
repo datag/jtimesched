@@ -180,10 +180,13 @@ public class JTimeSchedFrame extends JFrame {
 		
 		
 		// load settings
-		try {
-			this.loadSettings();
-		} catch (Exception e) {
-			e.printStackTrace();
+		file = new File(JTimeSchedApp.SETTINGS_FILE);
+		if (file.isFile()) {
+			try {
+				this.loadSettings();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		
