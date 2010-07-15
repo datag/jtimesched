@@ -79,16 +79,22 @@ public class JTimeSchedFrame extends JFrame {
 	public JTimeSchedFrame() {
 		super("jTimeSched (" + JTimeSchedApp.APP_VERSION + ")");
 		
-		this.setIconImage(Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history.png"));
 		
+		// set shutdown hook
+		Thread t = new Thread(new ShutdownActions());
+		Runtime.getRuntime().addShutdownHook(t);
+		
+		
+		this.setIconImage(Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history.png"));
 		this.setPreferredSize(new Dimension(600, 200));
 		this.setMinimumSize(new Dimension(460, 150));
 		
-		// create tray-icon
+		
+		// create tray-icon and set default close-behavior
 		if (this.setupTrayIcon())
 			this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		else
-			this.addWindowListener(new JTimeSchedFrameWindowListener());
+			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		
 		// load project-file
@@ -402,8 +408,21 @@ public class JTimeSchedFrame extends JFrame {
 
 			ActionListener exitListener = new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-
-					cleanExit();
+					
+					// store settings
+					try {
+						JTimeSchedFrame.this.saveSettings();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+					
+					JTimeSchedFrame.this.setVisible(false);
+					JTimeSchedFrame.this.dispose();
+					
+					if (SystemTray.isSupported())
+						SystemTray.getSystemTray().remove(JTimeSchedFrame.this.trayIcon);
+					
+					System.exit(0);
 				}
 			};
 
@@ -460,38 +479,29 @@ public class JTimeSchedFrame extends JFrame {
 		}
 
 	}
+	
+	class ShutdownActions implements Runnable {
 
-	public void cleanExit() {
-
-		for (Project p: this.arPrj) {
-			if (p.isRunning()) {
-				try {
-					p.pause();
-				} catch (ProjectException e) {
-					e.printStackTrace();
+		public void run() {
+			for (Project p: JTimeSchedFrame.this.arPrj) {
+				if (p.isRunning()) {
+					try {
+						p.pause();
+					} catch (ProjectException e) {
+						e.printStackTrace();
+					}
 				}
 			}
+
+			try {
+				JTimeSchedFrame.this.saveProjects();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
+			System.out.println("Exiting...");
 		}
 
-		try {
-			this.saveProjects();
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
-		
-		try {
-			this.saveSettings();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		
-		if (SystemTray.isSupported())
-			SystemTray.getSystemTray().remove(this.trayIcon);
-		
-		
-		System.out.println("Exiting...");
-		System.exit(0);
 	}
 	
 	
@@ -582,18 +592,6 @@ public class JTimeSchedFrame extends JFrame {
 		}
 	}
 	
-	
-	class JTimeSchedFrameWindowListener extends WindowAdapter {
-		@Override
-		public void windowClosing(WindowEvent e) {
-
-			Window window = e.getWindow();
-			window.setVisible(false);
-			window.dispose();
-			
-			cleanExit();
-		}
-	}
 	
 	class CustomCellRenderer extends JLabel implements TableCellRenderer {
 		public CustomCellRenderer() {
