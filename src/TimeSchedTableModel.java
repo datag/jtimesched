@@ -133,11 +133,11 @@ public class TimeSchedTableModel extends AbstractTableModel {
 			prj.setSecondsOverall(((Integer)value).intValue());
 			break;
 		case TimeSchedTableModel.COLUMN_TIMETODAY:
-			prj.setSecondsToday(((Integer)value).intValue());
+			prj.adjustSecondsToday(((Integer)value).intValue());
 			break;
 		}
 		
-		this.fireTableCellUpdated(row, column);
+		this.fireTableRowsUpdated(row, row);
 	}
 	
 	public void addProject(Project p) {

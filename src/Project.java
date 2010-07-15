@@ -106,21 +106,32 @@ public class Project implements Serializable {
 		
 		return seconds;
 	}
-
-	
 	
 	public void setSecondsOverall(int secondsOverall) {
-		if (secondsOverall >= 0)
-			this.secondsOverall = secondsOverall;
-		else
-			this.secondsOverall = 0;
+		if (secondsOverall < 0)
+			secondsOverall = 0;
+		
+		this.secondsOverall = secondsOverall;
 	}
 
 	public void setSecondsToday(int secondsToday) {
-		if (secondsToday >= 0)
-			this.secondsToday = secondsToday;
-		else
-			this.secondsToday = 0;
+		if (secondsToday < 0)
+			secondsToday = 0;
+		
+		this.secondsToday = secondsToday;
+		
+		// reset time-started
+		this.timeStart = new Date();
+	}
+	
+	public void adjustSecondsToday(int secondsToday) {
+		if (secondsToday < 0)
+			secondsToday = 0;
+		
+		int secondsDelta = secondsToday - this.secondsToday;
+		
+		this.setSecondsOverall(this.getSecondsOverall() + secondsDelta);
+		this.setSecondsToday(secondsToday);
 	}
 
 	protected void checkResetToday() {
