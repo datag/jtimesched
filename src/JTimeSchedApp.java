@@ -5,7 +5,7 @@ import java.nio.channels.FileLock;
 import javax.swing.JOptionPane;
 
 public class JTimeSchedApp {
-	static public final String APP_VERSION = "0.5";
+	static public final String APP_VERSION = "0.6";
 	static public final String DATA_PATH = "data/";
 	static public final String IMAGES_PATH = DATA_PATH + "img/";
 	static public final String PRJ_FILE = "jTimeSched.projects";
