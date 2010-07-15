@@ -63,6 +63,7 @@ import javax.swing.table.TableColumnModel;
 @SuppressWarnings("serial")
 public class JTimeSchedFrame extends JFrame {
 	private static final int COLUMN_ICON_WIDTH = 22;
+	private static final Color COLOR_RUNNING = new Color(0xFF, 0xE9, 0x7F);
 	
 	private TrayIcon trayIcon;
 	private boolean trayRunningState = false;
@@ -641,7 +642,7 @@ public class JTimeSchedFrame extends JFrame {
 			// row-color
 			if (prj.isRunning()) {
 				this.setFont(this.getFont().deriveFont(Font.BOLD));
-				this.setBackground(new Color(0xFF, 0xE9, 0x7F));
+				this.setBackground(COLOR_RUNNING);
 			} else {
 				this.setFont(this.getFont().deriveFont(Font.PLAIN));
 				
@@ -670,10 +671,23 @@ public class JTimeSchedFrame extends JFrame {
 			
 			if (value != null) {
 				this.setBackground((Color) value);
-				this.setBorder(new LineBorder(Color.WHITE, 1));
+				this.setBorder(new LineBorder(Color.WHITE, 2));
 			}
 			else {
-				this.setBackground(table.getBackground());
+				TimeSchedTableModel tstm = (TimeSchedTableModel) table.getModel();
+				int modelRow = table.convertRowIndexToModel(row);
+				Project prj = tstm.getProjectAt(modelRow);
+				
+				if (prj.isRunning()) {
+					this.setBackground(COLOR_RUNNING);
+				} else {
+					if (isSelected) {
+						this.setBackground(table.getSelectionBackground());
+					} else {
+						this.setBackground(table.getBackground());
+					}
+				}
+				
 				this.setBorder(null);
 			}
 			
@@ -705,7 +719,7 @@ public class JTimeSchedFrame extends JFrame {
 			int modelRow = table.convertRowIndexToModel(row);
 			Project prj = ((TimeSchedTableModel)table.getModel()).getProjectAt(modelRow);
 			if (prj.isRunning()) {
-				c.setBackground(new Color(0xFF, 0xE9, 0x7F));
+				c.setBackground(COLOR_RUNNING);
 				c.setFont(c.getFont().deriveFont(Font.BOLD));
 			} else {
 				if (isSelected) {

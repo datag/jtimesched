@@ -24,3 +24,7 @@ release 0.4
 	- allow sorting by status running/paused
 	- save window settings: size, position, visibility and sort-column
 
+release 0.5
+	- implemented categories using colors
+	- implemented manually editing time for overall/today
+	- tray-icon: gray for inactive, green for active
