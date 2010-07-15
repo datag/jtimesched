@@ -28,3 +28,11 @@ release 0.5
 	- implemented categories using colors
 	- implemented manually editing time for overall/today
 	- tray-icon: gray for inactive, green for active
+
+release 0.6
+	- fixed: adjust time-overall when manually setting time-today
+	- category chooser:
+		- changed available colors
+		- added option for choosing custom color
+	- fixed possible loss of data: installed shutdown-hook for saving projects
+
