@@ -103,7 +103,7 @@ dist_compile || { echo "Compile error" ; exit 1; }
 dist_jar || { echo "Jar error" ; exit 1; }
 
 # generate the API documentation
-dist_javadoc || { echo "Java-Doc error" ; exit 1; }
+#dist_javadoc || { echo "Java-Doc error" ; exit 1; }
 
 # create a zip package
 dist_zip || { echo "Zip error" ; exit 1; }
