@@ -119,9 +119,6 @@ public class Project implements Serializable {
 			secondsToday = 0;
 		
 		this.secondsToday = secondsToday;
-		
-		// reset time-started
-		this.timeStart = new Date();
 	}
 	
 	public void adjustSecondsToday(int secondsToday) {
@@ -153,6 +150,9 @@ public class Project implements Serializable {
 	
 	public void resetToday() {
 		this.secondsToday = 0;
+		
+		// reset time-started
+		this.timeStart = new Date();
 		
 		System.out.println("Resetting today's seconds");
 	}
