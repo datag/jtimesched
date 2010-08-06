@@ -11,14 +11,11 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -51,7 +48,7 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
-import javax.swing.border.BevelBorder;
+import javax.swing.RowSorter.SortKey;
 import javax.swing.border.LineBorder;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -246,7 +243,7 @@ public class JTimeSchedFrame extends JFrame {
 			for (Project p: this.arPrj) {
 				if (p.isRunning()) {
 					running = true;
-					strTray += " - " + p.getTitle() + " " + this.formatSeconds(p.getSecondsToday());
+					strTray += " - " + p.getTitle() + " " + JTimeSchedFrame.formatSeconds(p.getSecondsToday());
 					break;
 				}
 			}
@@ -290,8 +287,8 @@ public class JTimeSchedFrame extends JFrame {
 			strStats = String.format("%d project%s | %s overall | %s today",
 					projectCount,
 					(projectCount == 1) ? "" : "s",
-							this.formatSeconds(timeOverall),
-							this.formatSeconds(timeToday));
+							JTimeSchedFrame.formatSeconds(timeOverall),
+							JTimeSchedFrame.formatSeconds(timeToday));
 		}
 
 		this.lblOverall.setText(strStats + " ");
@@ -505,6 +502,7 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	public void loadProjects() throws Exception {
 		FileInputStream fis = null;
 		ObjectInputStream in = null;
@@ -544,7 +542,7 @@ public class JTimeSchedFrame extends JFrame {
 			fis = new FileInputStream(JTimeSchedApp.SETTINGS_FILE);
 			in = new ObjectInputStream(fis);
 			
-			String appVersion = in.readUTF();	// app-version
+			/*String appVersion =*/ in.readUTF();	// app-version
 			
 			Dimension size = (Dimension) in.readObject();
 			this.setSize(size);
@@ -580,7 +578,7 @@ public class JTimeSchedFrame extends JFrame {
 			out.writeObject(this.getLocation());
 			out.writeBoolean(this.isVisible());
 			
-			List<RowSorter.SortKey> sortKeys =  (List<RowSorter.SortKey>) this.tblSched.getRowSorter().getSortKeys();
+			List<? extends SortKey> sortKeys =  this.tblSched.getRowSorter().getSortKeys();
 			RowSorter.SortKey sortKey = sortKeys.get(0);
 			out.writeInt(sortKey.getColumn());
 			boolean sortAsc = (sortKey.getSortOrder() == SortOrder.ASCENDING) ? true : false;
