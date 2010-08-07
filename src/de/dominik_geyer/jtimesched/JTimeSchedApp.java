@@ -1,12 +1,19 @@
 package de.dominik_geyer.jtimesched;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import javax.swing.JOptionPane;
 
 import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
+import de.dominik_geyer.jtimesched.misc.PlainTextFormatter;
 
 public class JTimeSchedApp {
 	static public final String APP_VERSION = "0.7";
@@ -15,12 +22,15 @@ public class JTimeSchedApp {
 	static public final String PRJ_FILE = "jTimeSched.projects";
 	static public final String SETTINGS_FILE = "jTimeSched.settings";
 	static public final String LOCK_FILE = "jTimeSched.lock";
+	static public final String LOG_FILE = "jTimeSched.log";
+	
+	static private Logger LOGGER;
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+		// request lock
 		if (!JTimeSchedApp.lockInstance()) {
 			JOptionPane.showMessageDialog(null,
 					"It seems that there is already a running instance of jTimeSched " +
@@ -36,6 +46,22 @@ public class JTimeSchedApp {
 			System.exit(1);
 		}
 		
+		
+		// initialize logger
+		JTimeSchedApp.LOGGER = Logger.getLogger("JTimeSched");
+		JTimeSchedApp.LOGGER.setLevel(Level.ALL);
+		
+		try {
+			FileHandler fh = new FileHandler(JTimeSchedApp.LOG_FILE, true);
+			fh.setFormatter(new PlainTextFormatter());
+			JTimeSchedApp.LOGGER.addHandler(fh);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Enable to initialize logger for file "+JTimeSchedApp.LOG_FILE);
+		}
+		
+		
+		// open main frame
 		new JTimeSchedFrame();
 	}
 	
@@ -63,5 +89,10 @@ public class JTimeSchedApp {
 			System.err.println("Unable to create and/or lock file: " + JTimeSchedApp.LOCK_FILE + " " + e.getMessage());
 		}
 		return false;
+	}
+
+
+	public static Logger getLogger() {
+		return LOGGER;
 	}
 }

@@ -6,6 +6,9 @@ import java.util.Date;
 
 import javax.swing.table.AbstractTableModel;
 
+import de.dominik_geyer.jtimesched.JTimeSchedApp;
+import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
+
 
 @SuppressWarnings("serial")
 public class ProjectTableModel extends AbstractTableModel {
@@ -132,19 +135,36 @@ public class ProjectTableModel extends AbstractTableModel {
 		
 		switch (column) {
 		case ProjectTableModel.COLUMN_CHECK:
-			prj.setChecked((Boolean)value);
+			Boolean checked = (Boolean)value;
+			JTimeSchedApp.getLogger().info(String.format("%s check for project '%s'",
+					(checked) ? "Set" : "Unset",
+					prj.getTitle()));
+			prj.setChecked(checked);
 			break;
 		case ProjectTableModel.COLUMN_TITLE:
-			prj.setTitle((String)value);
+			String title = (String)value;
+			JTimeSchedApp.getLogger().info(String.format("Renamed project '%s' to '%s'",
+					prj.getTitle(),
+					title));
+			prj.setTitle(title);
 			break;
 		case ProjectTableModel.COLUMN_COLOR:
 			prj.setColor((Color)value);
 			break;
 		case ProjectTableModel.COLUMN_TIMEOVERALL:
-			prj.setSecondsOverall(((Integer)value).intValue());
-			break;
 		case ProjectTableModel.COLUMN_TIMETODAY:
-			prj.adjustSecondsToday(((Integer)value).intValue());
+			int oldSeconds = (column == ProjectTableModel.COLUMN_TIMEOVERALL) ? prj.getSecondsOverall() : prj.getSecondsToday();
+			int newSeconds = ((Integer)value).intValue();
+			JTimeSchedApp.getLogger().info(String.format("Manually set time %s for project '%s' from %s to %s",
+					(column == ProjectTableModel.COLUMN_TIMEOVERALL) ? "overall" : "today",
+					prj.getTitle(),
+					JTimeSchedFrame.formatSeconds(oldSeconds),
+					JTimeSchedFrame.formatSeconds(newSeconds)));
+			
+			if (column == ProjectTableModel.COLUMN_TIMEOVERALL)
+				prj.setSecondsOverall(newSeconds);
+			else
+				prj.adjustSecondsToday(newSeconds);
 			break;
 		}
 		
@@ -154,11 +174,18 @@ public class ProjectTableModel extends AbstractTableModel {
 	public void addProject(Project p) {
 		this.arPrj.add(p);
 		this.fireTableRowsInserted(this.getRowCount() -1, this.getRowCount() -1);
+		
+		JTimeSchedApp.getLogger().info("Created new project");
 	}
 
 	public void removeProject(int row) {
 		Project p = this.getProjectAt(row);
 		this.arPrj.remove(p);
 		this.fireTableRowsDeleted(row, row);
+		
+		JTimeSchedApp.getLogger().info(String.format("Removed project '%s' (time overall: %s, time today: %s)",
+				p.getTitle(),
+				JTimeSchedFrame.formatSeconds(p.getSecondsOverall()),
+				JTimeSchedFrame.formatSeconds(p.getSecondsToday())));
 	}
 }

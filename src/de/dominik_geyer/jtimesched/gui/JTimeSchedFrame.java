@@ -654,7 +654,7 @@ public class JTimeSchedFrame extends JFrame {
 				this.setText(text);
 				break;
 			case ProjectTableModel.COLUMN_ACTION_DELETE:
-				this.setToolTipText("delete project");
+				this.setToolTipText("remove project");
 				this.setIcon(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "project-delete.png"));
 				this.setHorizontalAlignment(SwingConstants.CENTER);
 				break;

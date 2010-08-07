@@ -8,6 +8,9 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import de.dominik_geyer.jtimesched.JTimeSchedApp;
+import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
+
 
 public class Project implements Serializable {
 	private static final long serialVersionUID = 1061321128496296078L;
@@ -149,14 +152,17 @@ public class Project implements Serializable {
 		String strStartDay = sdf.format(this.timeStart);
 		
 		if (!strCurrentDay.equals(strStartDay)) {
+			// FIXME: avoid dependency of unrelated classes here
+			JTimeSchedApp.getLogger().info(String.format("Resetting time today for project '%s' (previous time: %s)",
+					this.getTitle(),
+					JTimeSchedFrame.formatSeconds(this.getSecondsToday())));
+			
 			this.resetToday();
 		}
 	}
 	
 	public void resetOverall() {
 		this.secondsOverall = 0;
-		
-		System.out.println("Resetting overall seconds");
 	}
 	
 	public void resetToday() {
@@ -164,8 +170,6 @@ public class Project implements Serializable {
 		
 		// reset time-started
 		this.timeStart = new Date();
-		
-		System.out.println("Resetting today's seconds");
 	}
 	
 	// magic VM method for serialization
@@ -184,7 +188,7 @@ public class Project implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Project [name=" + title +
-				", running=" + running + ", timeStart=" + timeStart + "]";
+		return String.format("Project [title=%s, running=%s, secondsOverall=%d, secondsToday=%d]",
+				title, (running) ? "yes" : "no", secondsOverall, secondsToday);
 	}
 }
