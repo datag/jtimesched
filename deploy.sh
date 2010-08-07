@@ -3,7 +3,7 @@
 CURDIR=$(pwd)
 TMPDIR=$CURDIR/tmp
 
-AUX_FILES="data ChangeLog.txt LICENSE.txt jTimeSched.ico"
+AUX_FILES="data ChangeLog.txt LICENSE.txt jTimeSched.ico jTimeSched.png"
 AUX_FILES="$AUX_FILES src"    	# add soures as well, as we are GPLv3
 
 
