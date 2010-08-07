@@ -35,7 +35,7 @@ function dist_compile()
 	echo "Compiling..."
 	
 	JAVAC_CLASSPATH=
-	PROGRAM_MAIN=JTimeSchedApp.java
+	PROGRAM_MAIN=de/dominik_geyer/jtimesched/JTimeSchedApp.java
 
 	# find external libraries and add them to classpath
 	cd $CURDIR/src

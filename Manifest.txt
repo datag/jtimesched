@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Main-Class: JTimeSchedApp
+Main-Class: de.dominik_geyer.jtimesched.JTimeSchedApp
 Sealed: true
 Name: /
 Specification-Title: Time tracking application
