@@ -38,6 +38,7 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -163,6 +164,7 @@ public class JTimeSchedFrame extends JFrame {
 		}
 		
 		// column specific cell-renderer
+		tcm.getColumn(ProjectTableModel.COLUMN_CHECK).setCellRenderer(new CheckCellRenderer());
 		tcm.getColumn(ProjectTableModel.COLUMN_COLOR).setCellRenderer(new ColorCellRenderer());
 		tcm.getColumn(ProjectTableModel.COLUMN_COLOR).setCellEditor(new ColorCellEditor());
 		tcm.getColumn(ProjectTableModel.COLUMN_CREATED).setCellRenderer(new CustomCellRenderer());
@@ -680,6 +682,34 @@ public class JTimeSchedFrame extends JFrame {
 			} else {
 				this.setFont(this.getFont().deriveFont(Font.PLAIN));
 				
+				if (isSelected) {
+					this.setBackground(table.getSelectionBackground());
+				} else {
+					this.setBackground(table.getBackground());
+				}
+			}
+			
+			return this;
+		}
+	}
+
+	
+	class CheckCellRenderer extends JCheckBox implements TableCellRenderer {
+		
+		@Override
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean isSelected, boolean hasFocus, int row,
+				int column) {
+			
+			ProjectTableModel tstm = (ProjectTableModel) table.getModel();
+			int modelRow = table.convertRowIndexToModel(row);
+			Project prj = tstm.getProjectAt(modelRow);
+			
+			this.setSelected(prj.isChecked());
+			
+			if (prj.isRunning()) {
+				this.setBackground(COLOR_RUNNING);
+			} else {
 				if (isSelected) {
 					this.setBackground(table.getSelectionBackground());
 				} else {
