@@ -1,3 +1,5 @@
+package de.dominik_geyer.jtimesched.project;
+
 import java.awt.Color;
 import java.io.IOException;
 import java.io.ObjectInputStream;

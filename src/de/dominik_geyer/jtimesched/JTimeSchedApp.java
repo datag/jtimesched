@@ -1,8 +1,12 @@
+package de.dominik_geyer.jtimesched;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
 
 import javax.swing.JOptionPane;
+
+import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
 
 public class JTimeSchedApp {
 	static public final String APP_VERSION = "0.7";

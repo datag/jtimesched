@@ -1,3 +1,5 @@
+package de.dominik_geyer.jtimesched.gui;
+
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -55,6 +57,11 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import de.dominik_geyer.jtimesched.JTimeSchedApp;
+import de.dominik_geyer.jtimesched.project.Project;
+import de.dominik_geyer.jtimesched.project.ProjectException;
+import de.dominik_geyer.jtimesched.project.ProjectTableModel;
+
 
 @SuppressWarnings("serial")
 public class JTimeSchedFrame extends JFrame {
@@ -105,7 +112,7 @@ public class JTimeSchedFrame extends JFrame {
 		
 		
 		// create model an associate data
-		TimeSchedTableModel tstm = new TimeSchedTableModel(this.arPrj);
+		ProjectTableModel tstm = new ProjectTableModel(this.arPrj);
 		
 		// create table
 		this.tblSched = new JTable(tstm);
@@ -125,19 +132,19 @@ public class JTimeSchedFrame extends JFrame {
 		
 		// set default sort-column
 		List <RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
-		sortKeys.add(new RowSorter.SortKey(TimeSchedTableModel.COLUMN_CREATED, SortOrder.ASCENDING));
+		sortKeys.add(new RowSorter.SortKey(ProjectTableModel.COLUMN_CREATED, SortOrder.ASCENDING));
 		this.tblSched.getRowSorter().setSortKeys(sortKeys);
 		
 		
 		// define and set column properties
 		int[][] columnWidths = new int[][] {
-				{TimeSchedTableModel.COLUMN_TITLE,			200,	100,		-1},
-				{TimeSchedTableModel.COLUMN_COLOR,			-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
-				{TimeSchedTableModel.COLUMN_CREATED,		-1,		80,		80},
-				{TimeSchedTableModel.COLUMN_TIMEOVERALL,	95,		60,		95},
-				{TimeSchedTableModel.COLUMN_TIMETODAY,		95,		60,		95},
-				{TimeSchedTableModel.COLUMN_ACTION_DELETE,		-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
-				{TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE,	-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
+				{ProjectTableModel.COLUMN_TITLE,			200,	100,		-1},
+				{ProjectTableModel.COLUMN_COLOR,			-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
+				{ProjectTableModel.COLUMN_CREATED,		-1,		80,		80},
+				{ProjectTableModel.COLUMN_TIMEOVERALL,	95,		60,		95},
+				{ProjectTableModel.COLUMN_TIMETODAY,		95,		60,		95},
+				{ProjectTableModel.COLUMN_ACTION_DELETE,		-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
+				{ProjectTableModel.COLUMN_ACTION_STARTPAUSE,	-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
 		};
 		
 		TableColumnModel tcm = this.tblSched.getColumnModel();
@@ -155,15 +162,15 @@ public class JTimeSchedFrame extends JFrame {
 		}
 		
 		// column specific cell-renderer
-		tcm.getColumn(TimeSchedTableModel.COLUMN_COLOR).setCellRenderer(new ColorCellRenderer());
-		tcm.getColumn(TimeSchedTableModel.COLUMN_COLOR).setCellEditor(new ColorCellEditor());
-		tcm.getColumn(TimeSchedTableModel.COLUMN_CREATED).setCellRenderer(new CustomCellRenderer());
-		tcm.getColumn(TimeSchedTableModel.COLUMN_TIMEOVERALL).setCellRenderer(new CustomCellRenderer());
-		tcm.getColumn(TimeSchedTableModel.COLUMN_TIMEOVERALL).setCellEditor(new TimeCellEditor());
-		tcm.getColumn(TimeSchedTableModel.COLUMN_TIMETODAY).setCellRenderer(new CustomCellRenderer());
-		tcm.getColumn(TimeSchedTableModel.COLUMN_TIMETODAY).setCellEditor(new TimeCellEditor());
-		tcm.getColumn(TimeSchedTableModel.COLUMN_ACTION_DELETE).setCellRenderer(new CustomCellRenderer());
-		tcm.getColumn(TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE).setCellRenderer(new CustomCellRenderer());
+		tcm.getColumn(ProjectTableModel.COLUMN_COLOR).setCellRenderer(new ColorCellRenderer());
+		tcm.getColumn(ProjectTableModel.COLUMN_COLOR).setCellEditor(new ColorCellEditor());
+		tcm.getColumn(ProjectTableModel.COLUMN_CREATED).setCellRenderer(new CustomCellRenderer());
+		tcm.getColumn(ProjectTableModel.COLUMN_TIMEOVERALL).setCellRenderer(new CustomCellRenderer());
+		tcm.getColumn(ProjectTableModel.COLUMN_TIMEOVERALL).setCellEditor(new TimeCellEditor());
+		tcm.getColumn(ProjectTableModel.COLUMN_TIMETODAY).setCellRenderer(new CustomCellRenderer());
+		tcm.getColumn(ProjectTableModel.COLUMN_TIMETODAY).setCellEditor(new TimeCellEditor());
+		tcm.getColumn(ProjectTableModel.COLUMN_ACTION_DELETE).setCellRenderer(new CustomCellRenderer());
+		tcm.getColumn(ProjectTableModel.COLUMN_ACTION_STARTPAUSE).setCellRenderer(new CustomCellRenderer());
 		
 		
 		// listen on table-clicks
@@ -286,7 +293,7 @@ public class JTimeSchedFrame extends JFrame {
 
 
 	protected void updateSchedTable() {
-		TimeSchedTableModel tstm = (TimeSchedTableModel)tblSched.getModel();
+		ProjectTableModel tstm = (ProjectTableModel)tblSched.getModel();
 
 		int rowCount = tstm.getRowCount();
 		if (rowCount > 0)
@@ -335,7 +342,7 @@ public class JTimeSchedFrame extends JFrame {
 		 return (hours * 3600 + minutes * 60 + seconds);
 	}
 	
-	public void handleStartPause(TimeSchedTableModel tstm, Project prj, int row, int column) {
+	public void handleStartPause(ProjectTableModel tstm, Project prj, int row, int column) {
 		try {
 			if (prj.isRunning()) {
 				prj.pause();
@@ -359,7 +366,7 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
-	public void handleDelete(TimeSchedTableModel tstm, Project prj, int row, int column) {
+	public void handleDelete(ProjectTableModel tstm, Project prj, int row, int column) {
 //		int response = JOptionPane.showConfirmDialog(
 //				this,
 //				"Remove project \"" + prj.getTitle() + "\" from list?",
@@ -378,7 +385,7 @@ public class JTimeSchedFrame extends JFrame {
 	public void handleNewButton() {
 		Project prj = new Project("New project");
 		
-		TimeSchedTableModel tstm = (TimeSchedTableModel)this.tblSched.getModel();
+		ProjectTableModel tstm = (ProjectTableModel)this.tblSched.getModel();
 		tstm.addProject(prj);
 		
 		
@@ -386,10 +393,10 @@ public class JTimeSchedFrame extends JFrame {
 		int row = this.tblSched.convertRowIndexToView(tstm.getRowCount() - 1);
 		
 		// start editing cell
-		this.tblSched.editCellAt(row, TimeSchedTableModel.COLUMN_TITLE);
+		this.tblSched.editCellAt(row, ProjectTableModel.COLUMN_TITLE);
 		
 		// scroll to row/cell
-		this.tblSched.changeSelection(row, TimeSchedTableModel.COLUMN_TITLE, false, false);
+		this.tblSched.changeSelection(row, ProjectTableModel.COLUMN_TITLE, false, false);
 
 		// select all text if component is a textfield
 		Component ec = this.tblSched.getEditorComponent();
@@ -417,7 +424,8 @@ public class JTimeSchedFrame extends JFrame {
 					JOptionPane.showMessageDialog(null,
 							"jTimeSched\nVersion " +
 								JTimeSchedApp.APP_VERSION + "\n\n" +
-								"written by Dominik D. Geyer\n\n" +
+								"written by Dominik D. Geyer\n" +
+								"<devel@dominik-geyer.de>\n\n" +
 								"released under the GPLv3 license",
 							"About jTimeSched",
 							JOptionPane.INFORMATION_MESSAGE,
@@ -622,7 +630,7 @@ public class JTimeSchedFrame extends JFrame {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			
-			TimeSchedTableModel tstm = (TimeSchedTableModel) table.getModel();
+			ProjectTableModel tstm = (ProjectTableModel) table.getModel();
 			int modelRow = table.convertRowIndexToModel(row);
 			Project prj = tstm.getProjectAt(modelRow);
 			
@@ -630,24 +638,24 @@ public class JTimeSchedFrame extends JFrame {
 			String text = null;
 			
 			switch (column) {
-			case TimeSchedTableModel.COLUMN_TIMEOVERALL:
-			case TimeSchedTableModel.COLUMN_TIMETODAY:
+			case ProjectTableModel.COLUMN_TIMEOVERALL:
+			case ProjectTableModel.COLUMN_TIMETODAY:
 				text = formatSeconds(((Integer)value).intValue());
 				this.setHorizontalAlignment(SwingConstants.RIGHT);
 				this.setText(text);
 				break;
-			case TimeSchedTableModel.COLUMN_CREATED:
+			case ProjectTableModel.COLUMN_CREATED:
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd" /* HH:mm:ss */);
 				text = sdf.format((Date)value);
 				this.setHorizontalAlignment(SwingConstants.CENTER);
 				this.setText(text);
 				break;
-			case TimeSchedTableModel.COLUMN_ACTION_DELETE:
+			case ProjectTableModel.COLUMN_ACTION_DELETE:
 				this.setToolTipText("delete project");
 				this.setIcon(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "project-delete.png"));
 				this.setHorizontalAlignment(SwingConstants.CENTER);
 				break;
-			case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
+			case ProjectTableModel.COLUMN_ACTION_STARTPAUSE:
 				ImageIcon ii;
 				//String tooltip;
 				if (prj.isRunning()) {
@@ -699,7 +707,7 @@ public class JTimeSchedFrame extends JFrame {
 				this.setBorder(new LineBorder(Color.WHITE, 2));
 			}
 			else {
-				TimeSchedTableModel tstm = (TimeSchedTableModel) table.getModel();
+				ProjectTableModel tstm = (ProjectTableModel) table.getModel();
 				int modelRow = table.convertRowIndexToModel(row);
 				Project prj = tstm.getProjectAt(modelRow);
 				
@@ -742,7 +750,7 @@ public class JTimeSchedFrame extends JFrame {
 			}
 			
 			int modelRow = table.convertRowIndexToModel(row);
-			Project prj = ((TimeSchedTableModel)table.getModel()).getProjectAt(modelRow);
+			Project prj = ((ProjectTableModel)table.getModel()).getProjectAt(modelRow);
 			if (prj.isRunning()) {
 				c.setBackground(COLOR_RUNNING);
 				c.setFont(c.getFont().deriveFont(Font.BOLD));
@@ -882,7 +890,7 @@ public class JTimeSchedFrame extends JFrame {
 			
 			//System.out.println("clicked cell: " + row + ":" + column);
 			
-			TimeSchedTableModel tstm = (TimeSchedTableModel) tblSched.getModel();
+			ProjectTableModel tstm = (ProjectTableModel) tblSched.getModel();
 			
 			if (tblSched.getRowCount() == 0 || tblSched.getSelectedRow() == -1)
 				return;
@@ -891,11 +899,11 @@ public class JTimeSchedFrame extends JFrame {
 			System.out.println(prj);
 			
 			switch (column) {
-			case TimeSchedTableModel.COLUMN_ACTION_DELETE:
+			case ProjectTableModel.COLUMN_ACTION_DELETE:
 				if (e.getClickCount() == 2)
 					handleDelete(tstm, prj, row, column);
 				break;
-			case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
+			case ProjectTableModel.COLUMN_ACTION_STARTPAUSE:
 				handleStartPause(tstm, prj, row, column);
 				break;
 			}
