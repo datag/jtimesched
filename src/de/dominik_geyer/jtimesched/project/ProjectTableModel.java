@@ -7,7 +7,6 @@ import java.util.Date;
 import javax.swing.table.AbstractTableModel;
 
 import de.dominik_geyer.jtimesched.JTimeSchedApp;
-import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
 
 
 @SuppressWarnings("serial")
@@ -158,8 +157,8 @@ public class ProjectTableModel extends AbstractTableModel {
 			JTimeSchedApp.getLogger().info(String.format("Manually set time %s for project '%s' from %s to %s",
 					(column == ProjectTableModel.COLUMN_TIMEOVERALL) ? "overall" : "today",
 					prj.getTitle(),
-					JTimeSchedFrame.formatSeconds(oldSeconds),
-					JTimeSchedFrame.formatSeconds(newSeconds)));
+					ProjectTime.formatSeconds(oldSeconds),
+					ProjectTime.formatSeconds(newSeconds)));
 			
 			if (column == ProjectTableModel.COLUMN_TIMEOVERALL)
 				prj.setSecondsOverall(newSeconds);
@@ -185,7 +184,7 @@ public class ProjectTableModel extends AbstractTableModel {
 		
 		JTimeSchedApp.getLogger().info(String.format("Removed project '%s' (time overall: %s, time today: %s)",
 				p.getTitle(),
-				JTimeSchedFrame.formatSeconds(p.getSecondsOverall()),
-				JTimeSchedFrame.formatSeconds(p.getSecondsToday())));
+				ProjectTime.formatSeconds(p.getSecondsOverall()),
+				ProjectTime.formatSeconds(p.getSecondsToday())));
 	}
 }

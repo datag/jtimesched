@@ -29,8 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.Box;
@@ -62,6 +60,7 @@ import de.dominik_geyer.jtimesched.JTimeSchedApp;
 import de.dominik_geyer.jtimesched.project.Project;
 import de.dominik_geyer.jtimesched.project.ProjectException;
 import de.dominik_geyer.jtimesched.project.ProjectTableModel;
+import de.dominik_geyer.jtimesched.project.ProjectTime;
 
 
 @SuppressWarnings("serial")
@@ -279,7 +278,7 @@ public class JTimeSchedFrame extends JFrame {
 			if (running) {
 				strTray += String.format(" - %s %s",
 						runningProject.getTitle(),
-						JTimeSchedFrame.formatSeconds(runningProject.getSecondsToday()));
+						ProjectTime.formatSeconds(runningProject.getSecondsToday()));
 			}
 			
 			this.trayIcon.setToolTip(strTray);
@@ -319,31 +318,13 @@ public class JTimeSchedFrame extends JFrame {
 			strStats = String.format("%d project%s | %s overall | %s today",
 					projectCount,
 					(projectCount == 1) ? "" : "s",
-							JTimeSchedFrame.formatSeconds(timeOverall),
-							JTimeSchedFrame.formatSeconds(timeToday));
+							ProjectTime.formatSeconds(timeOverall),
+							ProjectTime.formatSeconds(timeToday));
 		}
 
 		this.lblOverall.setText(strStats + " ");
 	}
 	
-	
-	public static String formatSeconds(int s) {
-		return String.format("%d:%02d:%02d", s/3600, (s%3600)/60, (s%60));
-	}
-	
-	public static int parseSeconds(String strTime) throws ParseException {
-		 Pattern p = Pattern.compile("(\\d+):([0-5]?\\d):([0-5]?\\d)");	// 0:00:00
-		 Matcher m = p.matcher(strTime);
-		 
-		 if (!m.matches())
-			 throw new ParseException("Invalid seconds-string", 0);
-		 
-		 int hours = Integer.parseInt(m.group(1));
-		 int minutes = Integer.parseInt(m.group(2));
-		 int seconds = Integer.parseInt(m.group(3));
-		 
-		 return (hours * 3600 + minutes * 60 + seconds);
-	}
 	
 	public void handleStartPause(ProjectTableModel tstm, Project prj, int row, int column) {
 		try {
@@ -643,7 +624,7 @@ public class JTimeSchedFrame extends JFrame {
 			switch (column) {
 			case ProjectTableModel.COLUMN_TIMEOVERALL:
 			case ProjectTableModel.COLUMN_TIMETODAY:
-				text = formatSeconds(((Integer)value).intValue());
+				text = ProjectTime.formatSeconds(((Integer)value).intValue());
 				this.setHorizontalAlignment(SwingConstants.RIGHT);
 				this.setText(text);
 				break;
@@ -883,7 +864,7 @@ public class JTimeSchedFrame extends JFrame {
 				newSeconds = 0;
 			else {
 				try {
-					newSeconds = parseSeconds(strTime);
+					newSeconds = ProjectTime.parseSeconds(strTime);
 				} catch (ParseException e) {
 					System.err.println("Invalid seconds-string, keeping previous value");
 				}
@@ -896,7 +877,7 @@ public class JTimeSchedFrame extends JFrame {
 		public Component getTableCellEditorComponent(JTable table,
 				Object value, boolean isSelected, int row, int column) {
 			this.oldSeconds = ((Integer)value).intValue();
-			String strTime = formatSeconds(this.oldSeconds);
+			String strTime = ProjectTime.formatSeconds(this.oldSeconds);
 			this.tfEdit.setText(strTime);
 			
 			return this.tfEdit;

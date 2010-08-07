@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.dominik_geyer.jtimesched.JTimeSchedApp;
-import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
 
 
 public class Project implements Serializable {
@@ -155,7 +154,7 @@ public class Project implements Serializable {
 			// FIXME: avoid dependency of unrelated classes here
 			JTimeSchedApp.getLogger().info(String.format("Resetting time today for project '%s' (previous time: %s)",
 					this.getTitle(),
-					JTimeSchedFrame.formatSeconds(this.getSecondsToday())));
+					ProjectTime.formatSeconds(this.getSecondsToday())));
 			
 			this.resetToday();
 		}
