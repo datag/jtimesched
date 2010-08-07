@@ -138,6 +138,7 @@ public class JTimeSchedFrame extends JFrame {
 		
 		// define and set column properties
 		int[][] columnWidths = new int[][] {
+				{ProjectTableModel.COLUMN_CHECK,			-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
 				{ProjectTableModel.COLUMN_TITLE,			200,	100,		-1},
 				{ProjectTableModel.COLUMN_COLOR,			-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
 				{ProjectTableModel.COLUMN_CREATED,		-1,		80,		80},

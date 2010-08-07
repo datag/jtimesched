@@ -9,18 +9,19 @@ import javax.swing.table.AbstractTableModel;
 
 @SuppressWarnings("serial")
 public class ProjectTableModel extends AbstractTableModel {
-	private static final int COLUMN_COUNT = 7;
+	private static final int COLUMN_COUNT = 8;
 	
 	public static final int COLUMN_ACTION_DELETE = 0;
-	public static final int COLUMN_TITLE = 1;
-	public static final int COLUMN_COLOR = 2;
-	public static final int COLUMN_CREATED = 3;
-	public static final int COLUMN_TIMEOVERALL = 4;
-	public static final int COLUMN_TIMETODAY = 5;
-	public static final int COLUMN_ACTION_STARTPAUSE = 6;
+	public static final int COLUMN_CHECK = 1;
+	public static final int COLUMN_TITLE = 2;
+	public static final int COLUMN_COLOR = 3;
+	public static final int COLUMN_CREATED = 4;
+	public static final int COLUMN_TIMEOVERALL = 5;
+	public static final int COLUMN_TIMETODAY = 6;
+	public static final int COLUMN_ACTION_STARTPAUSE = 7;
 	
 	private String[] columnNames = new String[] {
-		"", "Title", "", "Created", "Time Overall", "Time Today", "",
+		"", "", "Title", "", "Created", "Time Overall", "Time Today", "",
 	};
 	
 	
@@ -49,6 +50,9 @@ public class ProjectTableModel extends AbstractTableModel {
 		switch (column) {
 		case ProjectTableModel.COLUMN_TITLE:
 			o = prj.getTitle();
+			break;
+		case ProjectTableModel.COLUMN_CHECK:
+			o = (prj.isChecked()) ? new Boolean(true) : new Boolean(false);
 			break;
 		case ProjectTableModel.COLUMN_COLOR:
 			o = prj.getColor();
@@ -93,6 +97,7 @@ public class ProjectTableModel extends AbstractTableModel {
 		case ProjectTableModel.COLUMN_TIMEOVERALL:
 		case ProjectTableModel.COLUMN_TIMETODAY:
 			return Integer.class;
+		case ProjectTableModel.COLUMN_CHECK:
 		case ProjectTableModel.COLUMN_ACTION_DELETE:
 		case ProjectTableModel.COLUMN_ACTION_STARTPAUSE:
 			return Boolean.class;
@@ -108,6 +113,7 @@ public class ProjectTableModel extends AbstractTableModel {
 		Project prj = this.getProjectAt(row);
 		
 		switch (column) {
+		case ProjectTableModel.COLUMN_CHECK:
 		case ProjectTableModel.COLUMN_TITLE:
 		case ProjectTableModel.COLUMN_COLOR:
 			return true;
@@ -125,6 +131,9 @@ public class ProjectTableModel extends AbstractTableModel {
 		Project prj = this.getProjectAt(row);
 		
 		switch (column) {
+		case ProjectTableModel.COLUMN_CHECK:
+			prj.setChecked((Boolean)value);
+			break;
 		case ProjectTableModel.COLUMN_TITLE:
 			prj.setTitle((String)value);
 			break;

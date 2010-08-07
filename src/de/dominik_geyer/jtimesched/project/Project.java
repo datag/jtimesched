@@ -15,6 +15,7 @@ public class Project implements Serializable {
 	private String title;
 	private Date timeCreated;
 	private Color color;
+	private boolean checked;
 	
 	private int secondsOverall;
 	private int secondsToday;
@@ -54,6 +55,14 @@ public class Project implements Serializable {
 		this.color = color;
 	}
 	
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
+	}
+
 	protected int getElapsedSeconds() throws ProjectException {
 		if (!this.isRunning())
 			throw new ProjectException("Timer not running");
