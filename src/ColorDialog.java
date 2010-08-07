@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComponent;
@@ -69,8 +70,9 @@ public class ColorDialog extends JDialog implements ActionListener {
 		this.add(panel);
 
 		
-		// color-chooser button
-		btn = new JButton("\u2661");  //2665");
+		// custom-color chooser button
+		btn = new JButton(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "color-custom.png"));
+		btn.setToolTipText("choose custom color");
 		btn.setPreferredSize(new Dimension(SIZE, SIZE));
 		btn.setMinimumSize(new Dimension(SIZE, SIZE));
 		btn.setMaximumSize(new Dimension(SIZE, SIZE));
@@ -87,7 +89,8 @@ public class ColorDialog extends JDialog implements ActionListener {
 		
 		
 		// no-color button
-		btn = new JButton("\u2612");
+		btn = new JButton(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "color-reset.png"));
+		btn.setToolTipText("reset color");
 		btn.setPreferredSize(new Dimension(SIZE, SIZE));
 		btn.setMinimumSize(new Dimension(SIZE, SIZE));
 		btn.setMaximumSize(new Dimension(SIZE, SIZE));

@@ -63,8 +63,8 @@ public class JTimeSchedFrame extends JFrame {
 	
 	private TrayIcon trayIcon;
 	private boolean runningState = false;
-	private static final Image trayDefaultImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history-inactive.png");
-	private static final Image trayRunningImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "history.png");
+	private static final Image trayDefaultImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "jtimesched-inactive.png");
+	private static final Image trayRunningImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "jtimesched-active.png");
 	
 	private JTable tblSched;
 	private JLabel lblOverall;
@@ -178,7 +178,7 @@ public class JTimeSchedFrame extends JFrame {
 		// bottom panel
 		JPanel panelBottom = new JPanel();
 		panelBottom.setLayout(new BoxLayout(panelBottom, BoxLayout.LINE_AXIS));
-		JButton btnAdd = new JButton("Add project", new ImageIcon(JTimeSchedApp.IMAGES_PATH + "history-add.png"));
+		JButton btnAdd = new JButton("Add project", new ImageIcon(JTimeSchedApp.IMAGES_PATH + "project-add.png"));
 		btnAdd.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -421,7 +421,7 @@ public class JTimeSchedFrame extends JFrame {
 								"released under the GPLv3 license",
 							"About jTimeSched",
 							JOptionPane.INFORMATION_MESSAGE,
-							new ImageIcon(JTimeSchedApp.IMAGES_PATH + "history.png"));
+							new ImageIcon(JTimeSchedFrame.trayDefaultImage));
 				}
 			};
 
@@ -643,15 +643,22 @@ public class JTimeSchedFrame extends JFrame {
 				this.setText(text);
 				break;
 			case TimeSchedTableModel.COLUMN_ACTION_DELETE:
-				this.setIcon(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "history-delete.png"));
+				this.setToolTipText("delete project");
+				this.setIcon(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "project-delete.png"));
 				this.setHorizontalAlignment(SwingConstants.CENTER);
 				break;
 			case TimeSchedTableModel.COLUMN_ACTION_STARTPAUSE:
 				ImageIcon ii;
-				if (prj.isRunning())
+				//String tooltip;
+				if (prj.isRunning()) {
+					//tooltip = "pause";
 					ii = new ImageIcon(JTimeSchedApp.IMAGES_PATH + "pause.png");
-				else
-					ii = new ImageIcon(JTimeSchedApp.IMAGES_PATH + "play.png");
+				}
+				else {
+					//tooltip = "start";
+					ii = new ImageIcon(JTimeSchedApp.IMAGES_PATH + "start.png");
+				}
+				//this.setToolTipText(tooltip);
 				this.setIcon(ii);
 				this.setHorizontalAlignment(SwingConstants.CENTER);
 				break;
