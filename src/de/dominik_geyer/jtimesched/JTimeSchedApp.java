@@ -16,10 +16,11 @@ public class JTimeSchedApp {
 	static public final String APP_VERSION = "0.7";
 	static public final String DATA_PATH = "data/";
 	static public final String IMAGES_PATH = DATA_PATH + "img/";
-	static public final String PRJ_FILE = "jTimeSched.projects";
-	static public final String SETTINGS_FILE = "jTimeSched.settings";
-	static public final String LOCK_FILE = "jTimeSched.lock";
-	static public final String LOG_FILE = "jTimeSched.log";
+	static public final String CONF_PATH = "conf/";
+	static public final String PRJ_FILE = CONF_PATH + "jTimeSched.projects";
+	static public final String SETTINGS_FILE = CONF_PATH + "jTimeSched.settings";
+	static public final String LOCK_FILE = CONF_PATH + "jTimeSched.lock";
+	static public final String LOG_FILE = CONF_PATH + "jTimeSched.log";
 	
 	static private Logger LOGGER;
 	
@@ -27,6 +28,11 @@ public class JTimeSchedApp {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		// FIXME: allow different config-path via command-line argument
+		File dirConf = new File(JTimeSchedApp.CONF_PATH);
+		if (!dirConf.isDirectory())
+			dirConf.mkdir();
+		
 		// request lock
 		if (!JTimeSchedApp.lockInstance()) {
 			JOptionPane.showMessageDialog(null,
