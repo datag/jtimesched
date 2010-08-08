@@ -2,6 +2,7 @@ package de.dominik_geyer.jtimesched.gui.table;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
 import javax.swing.JTable;
@@ -13,6 +14,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import de.dominik_geyer.jtimesched.project.Project;
 import de.dominik_geyer.jtimesched.project.ProjectTableModel;
 
 
@@ -21,6 +23,7 @@ public class ProjectTable extends JTable {
 	private static final int COLUMN_ICON_WIDTH = 22;
 	
 	private JFrame parentFrame;
+	private String highlightString = "";
 	
 	public ProjectTable(JFrame parentFrame, ProjectTableModel ptm) {
 		super(ptm);
@@ -134,5 +137,28 @@ public class ProjectTable extends JTable {
 			if ((TableCellEditor)cp[5] != null)
 				tc.setCellEditor((TableCellEditor)cp[5]);
 		}
+	}
+
+	public void setHighlightString(String highlightString) {
+		this.highlightString = highlightString;
+	}
+	
+	public boolean isHighlightRow(int row) {
+		ProjectTableModel ptm = (ProjectTableModel) this.getModel();
+		
+		boolean isHighlight = false;
+		
+		Project p = ptm.getProjectAt(row);
+		String strPattern = this.highlightString.trim();
+		
+		if (!strPattern.isEmpty()) {
+			//isHighlight = Pattern.matches(this.highlightString, p.getTitle());
+			
+			Pattern pattern = Pattern.compile(Pattern.quote(strPattern),
+					Pattern.CASE_INSENSITIVE);
+			isHighlight = pattern.matcher(p.getTitle()).find();
+		}
+		
+		return isHighlight; 
 	}
 }

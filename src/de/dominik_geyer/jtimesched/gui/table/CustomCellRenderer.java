@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 import javax.swing.table.TableCellRenderer;
 
 import de.dominik_geyer.jtimesched.JTimeSchedApp;
@@ -40,6 +41,14 @@ public class CustomCellRenderer extends JLabel implements TableCellRenderer {
 		switch (column) {
 		case ProjectTableModel.COLUMN_TITLE:
 			this.setText((String)value);
+			
+			// row-color
+			ProjectTable pt = (ProjectTable) table;
+			if (pt.isHighlightRow(modelRow)) {
+				this.setBorder(new LineBorder(Color.BLACK, 2));
+			} else {
+				this.setBorder(null);
+			}
 			break;
 		case ProjectTableModel.COLUMN_TIMEOVERALL:
 		case ProjectTableModel.COLUMN_TIMETODAY:
@@ -75,7 +84,6 @@ public class CustomCellRenderer extends JLabel implements TableCellRenderer {
 			break;
 		}
 		
-		// row-color
 		if (prj.isRunning()) {
 			this.setFont(this.getFont().deriveFont(Font.BOLD));
 			this.setBackground(CustomCellRenderer.COLOR_RUNNING);

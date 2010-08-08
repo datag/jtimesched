@@ -14,6 +14,10 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -36,7 +40,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
@@ -63,8 +66,9 @@ public class JTimeSchedFrame extends JFrame {
 	private static final Image trayDefaultImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "jtimesched-inactive.png");
 	private static final Image trayRunningImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "jtimesched-active.png");
 	
-	private JTable tblSched;
+	private ProjectTable tblSched;
 	private JLabel lblOverall;
+	private JTextField tfHighlight;
 	private ArrayList<Project> arPrj = new ArrayList<Project>();
 	
 	private boolean initiallyVisible = true;
@@ -80,7 +84,7 @@ public class JTimeSchedFrame extends JFrame {
 		
 		this.setIconImage(JTimeSchedFrame.trayDefaultImage);
 		this.setPreferredSize(new Dimension(600, 200));
-		this.setMinimumSize(new Dimension(460, 150));
+		this.setMinimumSize(new Dimension(480, 150));
 		
 		
 		// create tray-icon and set default close-behavior
@@ -111,9 +115,6 @@ public class JTimeSchedFrame extends JFrame {
 		// create table
 		this.tblSched = new ProjectTable(this, tstm);
 		
-		
-
-		
 		// listen on table-clicks
 		this.tblSched.addMouseListener(new TimeSchedTableMouseListener());
 
@@ -136,12 +137,49 @@ public class JTimeSchedFrame extends JFrame {
 		panelBottom.add(btnAdd);
 		
 		
-		// bottom statistics label
+		// bottom panel
+		panelBottom.add(Box.createRigidArea(new Dimension(10, 0)));
 		panelBottom.add(Box.createHorizontalGlue());
-		this.lblOverall = new JLabel("", SwingConstants.RIGHT);
+		this.lblOverall = new JLabel("", SwingConstants.CENTER);
 		this.lblOverall.setFont(this.lblOverall.getFont().deriveFont(Font.PLAIN));
 		panelBottom.add(this.lblOverall);
+		panelBottom.add(Box.createHorizontalGlue());
+		panelBottom.add(Box.createRigidArea(new Dimension(10, 0)));
+		
+		
+		// highlight editbox
+		this.tfHighlight = new JTextField(6);
+		this.tfHighlight.setToolTipText("highlight expression");
+		this.tfHighlight.addFocusListener(new FocusListener(){
+			@Override
+			public void focusGained(FocusEvent fe) {
+				tfHighlight.selectAll();
+			}
+
+			@Override
+			public void focusLost(FocusEvent fe) {}
+		});
+		this.tfHighlight.addKeyListener(new KeyListener(){
+			@Override
+			public void keyPressed(KeyEvent ke) {}
+
+			@Override
+			public void keyReleased(KeyEvent ke) {
+				tblSched.setHighlightString(tfHighlight.getText());
+				tblSched.repaint();
+			}
+
+			@Override
+			public void keyTyped(KeyEvent ke) {}
+		});
+		
+		Dimension sizeTf = new Dimension(100, this.tfHighlight.getMinimumSize().height);
+		this.tfHighlight.setMaximumSize(sizeTf);
+		this.tfHighlight.setMaximumSize(sizeTf);
+		panelBottom.add(this.tfHighlight);
+		
 		this.add(panelBottom, BorderLayout.SOUTH);
+		
 		
 		
 		// load settings
@@ -261,7 +299,7 @@ public class JTimeSchedFrame extends JFrame {
 							ProjectTime.formatSeconds(timeToday));
 		}
 
-		this.lblOverall.setText(strStats + " ");
+		this.lblOverall.setText(strStats);
 	}
 	
 	
