@@ -22,7 +22,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.Box;
@@ -47,6 +49,7 @@ import de.dominik_geyer.jtimesched.JTimeSchedApp;
 import de.dominik_geyer.jtimesched.gui.table.ProjectTable;
 import de.dominik_geyer.jtimesched.project.Project;
 import de.dominik_geyer.jtimesched.project.ProjectException;
+import de.dominik_geyer.jtimesched.project.ProjectSerializer;
 import de.dominik_geyer.jtimesched.project.ProjectTableModel;
 import de.dominik_geyer.jtimesched.project.ProjectTime;
 
@@ -91,7 +94,11 @@ public class JTimeSchedFrame extends JFrame {
 		File file = new File(JTimeSchedApp.PRJ_FILE);
 		if (file.isFile()) {
 			try {
-				this.loadProjects();
+				ProjectSerializer ps = new ProjectSerializer(JTimeSchedApp.PRJ_FILE);
+				this.arPrj = ps.readXml();
+				
+				// check all projects for a today-time reset
+				checkResetToday();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -330,6 +337,24 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
+	protected void checkResetToday() {
+		for (Project p: this.arPrj) {
+			Date currentTime = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("y-MMM-d");
+			String strCurrentDay = sdf.format(currentTime);
+			String strStartDay = sdf.format(p.getTimeStart());
+			
+			if (!strCurrentDay.equals(strStartDay)) {
+				JTimeSchedApp.getLogger().info(String.format("Resetting time today for project '%s' (previous time: %s)",
+						p.getTitle(),
+						ProjectTime.formatSeconds(p.getSecondsToday())));
+				
+				p.resetToday();
+			}
+		}
+	}
+	
+	
 	public boolean setupTrayIcon() {
 		if (SystemTray.isSupported()) {
 			SystemTray tray = SystemTray.getSystemTray();
@@ -437,7 +462,8 @@ public class JTimeSchedFrame extends JFrame {
 			}
 
 			try {
-				JTimeSchedFrame.this.saveProjects();
+				ProjectSerializer ps = new ProjectSerializer(JTimeSchedApp.PRJ_FILE);
+				ps.writeXml(JTimeSchedFrame.this.arPrj);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -445,39 +471,6 @@ public class JTimeSchedFrame extends JFrame {
 			System.out.println("Exiting...");
 		}
 
-	}
-	
-	
-	@SuppressWarnings("unchecked")
-	public void loadProjects() throws Exception {
-		FileInputStream fis = null;
-		ObjectInputStream in = null;
-		try {
-			fis = new FileInputStream(JTimeSchedApp.PRJ_FILE);
-			in = new ObjectInputStream(fis);
-			this.arPrj = (ArrayList<Project>) in.readObject();
-			in.close();
-			
-			//System.out.println(arPrj);
-		} catch(IOException ex) {
-			throw ex;
-		} catch(ClassNotFoundException ex) {
-			throw ex;
-		}
-	}
-	
-	
-	public void saveProjects() throws Exception {
-		FileOutputStream fos = null;
-		ObjectOutputStream out = null;
-		try	{
-			fos = new FileOutputStream(JTimeSchedApp.PRJ_FILE);
-			out = new ObjectOutputStream(fos);
-			out.writeObject(this.arPrj);
-			out.close();
-		} catch(IOException ex) {
-			throw ex;
-		}
 	}
 	
 	

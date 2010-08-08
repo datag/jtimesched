@@ -1,19 +1,10 @@
 package de.dominik_geyer.jtimesched.project;
 
 import java.awt.Color;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import de.dominik_geyer.jtimesched.JTimeSchedApp;
 
-
-public class Project implements Serializable {
-	private static final long serialVersionUID = 1061321128496296078L;
-	
+public class Project {
 	private String title;
 	private Date timeCreated;
 	private Color color;
@@ -24,6 +15,10 @@ public class Project implements Serializable {
 	
 	private boolean running;
 	private Date timeStart;
+	
+	public Project() {
+		this("project");
+	}
 	
 	public Project(String name) {
 		this.title = name;
@@ -45,6 +40,10 @@ public class Project implements Serializable {
 		return timeCreated;
 	}
 	
+	public Date getTimeStart() {
+		return timeStart;
+	}
+
 	public boolean isRunning() {
 		return this.running;
 	}
@@ -63,6 +62,18 @@ public class Project implements Serializable {
 
 	public void setChecked(boolean checked) {
 		this.checked = checked;
+	}
+
+	void setTimeCreated(Date timeCreated) {
+		this.timeCreated = timeCreated;
+	}
+
+	void setRunning(boolean running) {
+		this.running = running;
+	}
+
+	void setTimeStart(Date timeStart) {
+		this.timeStart = timeStart;
 	}
 
 	protected int getElapsedSeconds() throws ProjectException {
@@ -143,22 +154,6 @@ public class Project implements Serializable {
 		this.setSecondsOverall(this.getSecondsOverall() + secondsDelta);
 		this.setSecondsToday(secondsToday);
 	}
-
-	protected void checkResetToday() {
-		Date currentTime = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("y-MMM-d");
-		String strCurrentDay = sdf.format(currentTime);
-		String strStartDay = sdf.format(this.timeStart);
-		
-		if (!strCurrentDay.equals(strStartDay)) {
-			// FIXME: avoid dependency of unrelated classes here
-			JTimeSchedApp.getLogger().info(String.format("Resetting time today for project '%s' (previous time: %s)",
-					this.getTitle(),
-					ProjectTime.formatSeconds(this.getSecondsToday())));
-			
-			this.resetToday();
-		}
-	}
 	
 	public void resetOverall() {
 		this.secondsOverall = 0;
@@ -171,23 +166,12 @@ public class Project implements Serializable {
 		this.timeStart = new Date();
 	}
 	
-	// magic VM method for serialization
-	private void writeObject(ObjectOutputStream out) throws IOException {
-		out.defaultWriteObject();
-	}
-
-	// magic VM method for de-serialization
-	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-		in.defaultReadObject();
-		
-		// now we are a "live" object again
-		this.checkResetToday();
-	}
-	
-	
 	@Override
 	public String toString() {
-		return String.format("Project [title=%s, running=%s, secondsOverall=%d, secondsToday=%d]",
-				title, (running) ? "yes" : "no", secondsOverall, secondsToday);
+		return String.format("Project [title=%s, running=%s, secondsOverall=%d, secondsToday=%d, checked=%s]",
+				title,
+				(running) ? "yes" : "no",
+				secondsOverall, secondsToday,
+				(checked) ? "yes" : "no");
 	}
 }
