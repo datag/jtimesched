@@ -2,7 +2,6 @@ package de.dominik_geyer.jtimesched.gui;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -17,26 +16,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import javax.swing.AbstractCellEditor;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -44,19 +36,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.RowSorter.SortKey;
-import javax.swing.border.LineBorder;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+
 
 import de.dominik_geyer.jtimesched.JTimeSchedApp;
+import de.dominik_geyer.jtimesched.gui.table.ProjectTable;
 import de.dominik_geyer.jtimesched.project.Project;
 import de.dominik_geyer.jtimesched.project.ProjectException;
 import de.dominik_geyer.jtimesched.project.ProjectTableModel;
@@ -65,8 +53,7 @@ import de.dominik_geyer.jtimesched.project.ProjectTime;
 
 @SuppressWarnings("serial")
 public class JTimeSchedFrame extends JFrame {
-	private static final int COLUMN_ICON_WIDTH = 22;
-	private static final Color COLOR_RUNNING = new Color(0xFF, 0xE9, 0x7F);
+	
 	
 	private TrayIcon trayIcon;
 	private boolean runningState = false;
@@ -115,65 +102,10 @@ public class JTimeSchedFrame extends JFrame {
 		ProjectTableModel tstm = new ProjectTableModel(this.arPrj);
 		
 		// create table
-		this.tblSched = new JTable(tstm);
-		this.tblSched.setFillsViewportHeight(true);
-		this.tblSched.setShowGrid(true);
-		this.tblSched.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.tblSched.setAutoCreateRowSorter(true);
-		this.tblSched.setRowHeight(JTimeSchedFrame.COLUMN_ICON_WIDTH);
-		//this.tblSched.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE); // not needed?
-		this.tblSched.getTableHeader().setReorderingAllowed(false);
-		
-		// set a custom default cell-renderer 
-		TableCellRenderer defaultRenderer = this.tblSched.getDefaultRenderer(Object.class);
-		this.tblSched.setDefaultRenderer(Object.class,
-				new TimeSchedTableCellRenderer(defaultRenderer));
+		this.tblSched = new ProjectTable(this, tstm);
 		
 		
-		// set default sort-column
-		List <RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
-		sortKeys.add(new RowSorter.SortKey(ProjectTableModel.COLUMN_CREATED, SortOrder.ASCENDING));
-		this.tblSched.getRowSorter().setSortKeys(sortKeys);
-		
-		
-		// define and set column properties
-		int[][] columnWidths = new int[][] {
-				{ProjectTableModel.COLUMN_CHECK,			-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
-				{ProjectTableModel.COLUMN_TITLE,			200,	100,		-1},
-				{ProjectTableModel.COLUMN_COLOR,			-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
-				{ProjectTableModel.COLUMN_CREATED,		-1,		80,		80},
-				{ProjectTableModel.COLUMN_TIMEOVERALL,	95,		60,		95},
-				{ProjectTableModel.COLUMN_TIMETODAY,		95,		60,		95},
-				{ProjectTableModel.COLUMN_ACTION_DELETE,		-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
-				{ProjectTableModel.COLUMN_ACTION_STARTPAUSE,	-1,		JTimeSchedFrame.COLUMN_ICON_WIDTH,	JTimeSchedFrame.COLUMN_ICON_WIDTH},
-		};
-		
-		TableColumnModel tcm = this.tblSched.getColumnModel();
-		for (int[] cw: columnWidths) {
-			TableColumn tc = tcm.getColumn(cw[0]);
-			
-			if (cw[1] > 0)
-				tc.setPreferredWidth(cw[1]);
-			
-			if (cw[2] > 0)
-				tc.setMinWidth(cw[2]);
-			
-			if (cw[3] > 0)
-				tc.setMaxWidth(cw[3]);	
-		}
-		
-		// column specific cell-renderer
-		tcm.getColumn(ProjectTableModel.COLUMN_CHECK).setCellRenderer(new CheckCellRenderer());
-		tcm.getColumn(ProjectTableModel.COLUMN_COLOR).setCellRenderer(new ColorCellRenderer());
-		tcm.getColumn(ProjectTableModel.COLUMN_COLOR).setCellEditor(new ColorCellEditor());
-		tcm.getColumn(ProjectTableModel.COLUMN_CREATED).setCellRenderer(new CustomCellRenderer());
-		tcm.getColumn(ProjectTableModel.COLUMN_TIMEOVERALL).setCellRenderer(new CustomCellRenderer());
-		tcm.getColumn(ProjectTableModel.COLUMN_TIMEOVERALL).setCellEditor(new TimeCellEditor());
-		tcm.getColumn(ProjectTableModel.COLUMN_TIMETODAY).setCellRenderer(new CustomCellRenderer());
-		tcm.getColumn(ProjectTableModel.COLUMN_TIMETODAY).setCellEditor(new TimeCellEditor());
-		tcm.getColumn(ProjectTableModel.COLUMN_ACTION_DELETE).setCellRenderer(new CustomCellRenderer());
-		tcm.getColumn(ProjectTableModel.COLUMN_ACTION_STARTPAUSE).setCellRenderer(new CustomCellRenderer());
-		
+
 		
 		// listen on table-clicks
 		this.tblSched.addMouseListener(new TimeSchedTableMouseListener());
@@ -604,287 +536,6 @@ public class JTimeSchedFrame extends JFrame {
 		}
 	}
 	
-	
-	class CustomCellRenderer extends JLabel implements TableCellRenderer {
-		public CustomCellRenderer() {
-			this.setOpaque(true);
-		}
-		
-		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			
-			ProjectTableModel tstm = (ProjectTableModel) table.getModel();
-			int modelRow = table.convertRowIndexToModel(row);
-			Project prj = tstm.getProjectAt(modelRow);
-			
-			
-			String text = null;
-			
-			switch (column) {
-			case ProjectTableModel.COLUMN_TIMEOVERALL:
-			case ProjectTableModel.COLUMN_TIMETODAY:
-				text = ProjectTime.formatSeconds(((Integer)value).intValue());
-				this.setHorizontalAlignment(SwingConstants.RIGHT);
-				this.setText(text);
-				break;
-			case ProjectTableModel.COLUMN_CREATED:
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd" /* HH:mm:ss */);
-				text = sdf.format((Date)value);
-				this.setHorizontalAlignment(SwingConstants.CENTER);
-				this.setText(text);
-				break;
-			case ProjectTableModel.COLUMN_ACTION_DELETE:
-				this.setToolTipText("remove project");
-				this.setIcon(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "project-delete.png"));
-				this.setHorizontalAlignment(SwingConstants.CENTER);
-				break;
-			case ProjectTableModel.COLUMN_ACTION_STARTPAUSE:
-				ImageIcon ii;
-				//String tooltip;
-				if (prj.isRunning()) {
-					//tooltip = "pause";
-					ii = new ImageIcon(JTimeSchedApp.IMAGES_PATH + "pause.png");
-				}
-				else {
-					//tooltip = "start";
-					ii = new ImageIcon(JTimeSchedApp.IMAGES_PATH + "start.png");
-				}
-				//this.setToolTipText(tooltip);
-				this.setIcon(ii);
-				this.setHorizontalAlignment(SwingConstants.CENTER);
-				break;
-			}
-			
-			// row-color
-			if (prj.isRunning()) {
-				this.setFont(this.getFont().deriveFont(Font.BOLD));
-				this.setBackground(COLOR_RUNNING);
-			} else {
-				this.setFont(this.getFont().deriveFont(Font.PLAIN));
-				
-				if (isSelected) {
-					this.setBackground(table.getSelectionBackground());
-				} else {
-					this.setBackground(table.getBackground());
-				}
-			}
-			
-			return this;
-		}
-	}
-
-	
-	class CheckCellRenderer extends JCheckBox implements TableCellRenderer {
-		
-		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
-			
-			ProjectTableModel tstm = (ProjectTableModel) table.getModel();
-			int modelRow = table.convertRowIndexToModel(row);
-			Project prj = tstm.getProjectAt(modelRow);
-			
-			this.setSelected(prj.isChecked());
-			
-			if (prj.isRunning()) {
-				this.setBackground(COLOR_RUNNING);
-			} else {
-				if (isSelected) {
-					this.setBackground(table.getSelectionBackground());
-				} else {
-					this.setBackground(table.getBackground());
-				}
-			}
-			
-			return this;
-		}
-	}
-	
-	
-	class ColorCellRenderer extends JLabel implements TableCellRenderer {
-		
-		public ColorCellRenderer() {
-			this.setOpaque(true);
-		}
-		
-		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
-			
-			if (value != null) {
-				this.setBackground((Color) value);
-				this.setBorder(new LineBorder(Color.WHITE, 2));
-			}
-			else {
-				ProjectTableModel tstm = (ProjectTableModel) table.getModel();
-				int modelRow = table.convertRowIndexToModel(row);
-				Project prj = tstm.getProjectAt(modelRow);
-				
-				if (prj.isRunning()) {
-					this.setBackground(COLOR_RUNNING);
-				} else {
-					if (isSelected) {
-						this.setBackground(table.getSelectionBackground());
-					} else {
-						this.setBackground(table.getBackground());
-					}
-				}
-				
-				this.setBorder(null);
-			}
-			
-			return this;
-		}
-	}
-	
-	
-	class TimeSchedTableCellRenderer implements TableCellRenderer {
-		private TableCellRenderer defaultRenderer;
-
-		public TimeSchedTableCellRenderer(TableCellRenderer renderer) {
-			this.defaultRenderer = renderer;
-		}
-
-		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			
-			Component c = null;
-			
-			if (value instanceof Component)
-				c = (Component) value;
-			else {
-				c = this.defaultRenderer.getTableCellRendererComponent(
-		    		   table, value, isSelected, hasFocus, row, column);
-			}
-			
-			int modelRow = table.convertRowIndexToModel(row);
-			Project prj = ((ProjectTableModel)table.getModel()).getProjectAt(modelRow);
-			if (prj.isRunning()) {
-				c.setBackground(COLOR_RUNNING);
-				c.setFont(c.getFont().deriveFont(Font.BOLD));
-			} else {
-				if (isSelected) {
-					c.setBackground(table.getSelectionBackground());
-				} else {
-					c.setBackground(table.getBackground());
-				}
-			}
-			
-			if (value instanceof JLabel) {
-				JLabel l = (JLabel) value;
-				l.setOpaque(true);
-			}
-			
-			return c;
-		}
-	}
-	
-	class ColorCellEditor extends AbstractCellEditor implements TableCellEditor, MouseListener {
-		JButton btnEdit;
-		Color currentColor;
-		Color selectedColor;
-		
-		public ColorCellEditor() {
-			this.btnEdit = new JButton();
-			this.btnEdit.addMouseListener(this);
-		}
-		
-		@Override
-		public Component getTableCellEditorComponent(JTable table, Object value,
-				boolean isSelected, int row, int column) {
-			
-			this.currentColor = (Color) value;
-			
-			return this.btnEdit;
-		}
-
-		@Override
-		public Object getCellEditorValue() {
-			return this.selectedColor; 
-		}
-		
-		@Override
-		public void mousePressed(MouseEvent e) {
-			this.btnEdit.setBackground(this.currentColor);
-			
-			Point posClick = e.getLocationOnScreen();
-			ColorDialog colorDialog = new ColorDialog(JTimeSchedFrame.this,
-					posClick,
-					this.currentColor);
-			
-			colorDialog.setVisible(true);
-			this.selectedColor = colorDialog.getSelectedColor();
-			
-			this.fireEditingStopped();
-		}
-		
-		@Override
-		public void mouseClicked(MouseEvent arg0) {}
-
-		@Override
-		public void mouseEntered(MouseEvent arg0) {}
-
-		@Override
-		public void mouseExited(MouseEvent arg0) {}
-
-		@Override
-		public void mouseReleased(MouseEvent arg0) {}
-
-		@Override
-		public void cancelCellEditing() {
-			
-			super.cancelCellEditing();
-			
-			System.out.println("canel");
-		}
-		
-		
-	}
-	
-	class TimeCellEditor extends DefaultCellEditor {
-		private JTextField tfEdit;
-		private int oldSeconds;
-		
-		public TimeCellEditor() {
-			super(new JTextField());
-			this.tfEdit = (JTextField) this.getComponent();
-			this.tfEdit.setHorizontalAlignment(SwingConstants.RIGHT);
-		}
-
-		@Override
-		public Object getCellEditorValue() {
-			String strTime = this.tfEdit.getText();
-			int newSeconds = this.oldSeconds;
-			
-			if (strTime.isEmpty() || strTime.equals("0"))
-				newSeconds = 0;
-			else {
-				try {
-					newSeconds = ProjectTime.parseSeconds(strTime);
-				} catch (ParseException e) {
-					System.err.println("Invalid seconds-string, keeping previous value");
-				}
-			}
-			
-			return newSeconds;
-		}
-
-		@Override
-		public Component getTableCellEditorComponent(JTable table,
-				Object value, boolean isSelected, int row, int column) {
-			this.oldSeconds = ((Integer)value).intValue();
-			String strTime = ProjectTime.formatSeconds(this.oldSeconds);
-			this.tfEdit.setText(strTime);
-			
-			return this.tfEdit;
-		}
-		
-		
-	}
 	
 	class TimeSchedTableMouseListener extends MouseAdapter {
 
