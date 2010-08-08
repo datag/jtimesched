@@ -266,6 +266,12 @@ public class JTimeSchedFrame extends JFrame {
 	
 	
 	public void handleStartPause(ProjectTableModel tstm, Project prj, int row, int column) {
+		JTimeSchedApp.getLogger().info(String.format("%s project '%s' (time overall: %s, time today: %s)",
+				(prj.isRunning()) ? "Pausing" : "Starting",
+				prj.getTitle(),
+				ProjectTime.formatSeconds(prj.getSecondsOverall()),
+				ProjectTime.formatSeconds(prj.getSecondsToday())));
+		
 		try {
 			if (prj.isRunning()) {
 				prj.pause();
