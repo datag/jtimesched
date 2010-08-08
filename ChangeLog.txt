@@ -36,3 +36,11 @@ release 0.6
 		- added option for choosing custom color
 	- fixed possible loss of data: installed shutdown-hook for saving projects
 
+release 0.7
+	- when a project is running, set different window icon as well
+	- added icons for custom/reset-color buttons
+	- added additional column with multi-purpose checkbox
+	- implemented logging of project changes
+	- save runtime-file in separate directory
+	- save/load projects as XML instead of using java serialization
+	- implemented highlighting of rows by keyword
