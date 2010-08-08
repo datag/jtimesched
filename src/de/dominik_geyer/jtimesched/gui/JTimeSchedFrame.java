@@ -337,7 +337,7 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
-	protected void checkResetToday() {
+	protected void checkResetToday() throws ProjectException {
 		for (Project p: this.arPrj) {
 			Date currentTime = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("y-MMM-d");
@@ -345,11 +345,17 @@ public class JTimeSchedFrame extends JFrame {
 			String strStartDay = sdf.format(p.getTimeStart());
 			
 			if (!strCurrentDay.equals(strStartDay)) {
-				JTimeSchedApp.getLogger().info(String.format("Resetting time today for project '%s' (previous time: %s)",
-						p.getTitle(),
-						ProjectTime.formatSeconds(p.getSecondsToday())));
-				
-				p.resetToday();
+				if (!p.isRunning()) {
+					JTimeSchedApp.getLogger().info(String.format("Resetting time today for project '%s' (previous time: %s)",
+							p.getTitle(),
+							ProjectTime.formatSeconds(p.getSecondsToday())));
+					
+					// reset time-today
+					p.resetToday();
+				} else {
+					JTimeSchedApp.getLogger().info(String.format("NOT resetting time today for project '%s' because it is still in running state",
+							p.getTitle()));
+				}
 			}
 		}
 	}
@@ -451,15 +457,15 @@ public class JTimeSchedFrame extends JFrame {
 	class ShutdownActions implements Runnable {
 
 		public void run() {
-			for (Project p: JTimeSchedFrame.this.arPrj) {
-				if (p.isRunning()) {
-					try {
-						p.pause();
-					} catch (ProjectException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+//			for (Project p: JTimeSchedFrame.this.arPrj) {
+//				if (p.isRunning()) {
+//					try {
+//						p.pause();
+//					} catch (ProjectException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
 
 			try {
 				ProjectSerializer ps = new ProjectSerializer(JTimeSchedApp.PRJ_FILE);
