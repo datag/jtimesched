@@ -69,7 +69,9 @@ public class JTimeSchedFrame extends JFrame {
 	private ProjectTable tblSched;
 	private JLabel lblOverall;
 	private JTextField tfHighlight;
+	
 	private ArrayList<Project> arPrj = new ArrayList<Project>();
+	private Thread saveProjectsHook;
 	
 	private boolean initiallyVisible = true;
 	
@@ -78,8 +80,8 @@ public class JTimeSchedFrame extends JFrame {
 		
 		
 		// set shutdown hook
-		Thread t = new Thread(new ShutdownActions());
-		Runtime.getRuntime().addShutdownHook(t);
+		this.saveProjectsHook = new Thread(new ShutdownActions());
+		Runtime.getRuntime().addShutdownHook(this.saveProjectsHook);
 		
 		
 		this.setIconImage(JTimeSchedFrame.trayDefaultImage);
@@ -105,6 +107,17 @@ public class JTimeSchedFrame extends JFrame {
 				checkResetToday();
 			} catch (Exception e) {
 				e.printStackTrace();
+				JOptionPane.showMessageDialog(this,
+						"An error occurred while loading the project data:\n" +
+						e.getMessage() + "\n\n" +
+						"Please correct or remove the file '" + JTimeSchedApp.PRJ_FILE + "'. " +
+						"JTimeSched will quit now to avoid data corruption.",
+						"Error loading project data",
+						JOptionPane.ERROR_MESSAGE);
+				
+				// do not call shutdown hook on exit
+				Runtime.getRuntime().removeShutdownHook(this.saveProjectsHook);
+				System.exit(1);
 			}
 		}
 		

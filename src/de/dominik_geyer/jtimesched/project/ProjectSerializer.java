@@ -2,8 +2,9 @@ package de.dominik_geyer.jtimesched.project;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,9 +36,8 @@ public class ProjectSerializer {
 	
 
 	public void writeXml(List<Project> projects) throws TransformerConfigurationException, SAXException, IOException {
-		PrintWriter out = new PrintWriter(new File(this.filename));
-		//OutputStream os = new FileOutputStream(filename);
-		//OutputStreamWriter out = new OutputStreamWriter(os, "UTF-8");
+		OutputStreamWriter out = new OutputStreamWriter(
+				new FileOutputStream(filename), "UTF-8");
 		StreamResult streamResult = new StreamResult(out);
 		SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 		
@@ -88,7 +88,6 @@ public class ProjectSerializer {
 		hd.endDocument();
 		
 		out.close();
-		//os.close();
 	}
 	
 	public ArrayList<Project> readXml() throws ParserConfigurationException, SAXException, IOException {

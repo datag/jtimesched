@@ -44,3 +44,6 @@ release 0.7
 	- save runtime-file in separate directory
 	- save/load projects as XML instead of using java serialization
 	- implemented highlighting of rows by keyword
+
+release 0.8
+	- fixed: save project data as UTF-8 no matter what encoding is set by system locale
