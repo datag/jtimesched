@@ -60,6 +60,7 @@ function dist_jar()
 	
 	# create the jar-package
 	jar cfm jTimeSched.jar Manifest.txt -C bin/ .
+	chmod a+x jTimeSched.jar
 	
 	cd $CURDIR
 }
