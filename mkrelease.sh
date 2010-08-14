@@ -3,7 +3,7 @@
 CURDIR=$(pwd)
 TMPDIR=$CURDIR/tmp
 
-AUX_FILES="data ChangeLog.txt LICENSE.txt jTimeSched.ico jTimeSched.png"
+AUX_FILES="data ChangeLog.txt LICENSE.txt jTimeSched.ico jTimeSched.png jTimeSched.sh"
 AUX_FILES="$AUX_FILES src"    	# add soures as well, as we are GPLv3
 
 
@@ -60,7 +60,12 @@ function dist_jar()
 	
 	# create the jar-package
 	jar cfm jTimeSched.jar Manifest.txt -C bin/ .
+	
+	# set the executable bits for the jar
 	chmod a+x jTimeSched.jar
+	
+	# set the executable bits for the launcher script
+	chmod a+x jTimeSched.sh
 	
 	cd $CURDIR
 }
