@@ -51,6 +51,16 @@ public class ProjectTable extends JTable {
 		
 		// define and set column properties
 		Object[][] columnProps = new Object[][] {
+				/*
+				 * {
+				 *     column index,
+				 *     preferred width,
+				 *     minimum width,
+				 *     maximum width,
+				 *     cell renderer,
+				 *     cell editor
+				 * }
+				 */
 				{
 					ProjectTableModel.COLUMN_CHECK,
 					-1,

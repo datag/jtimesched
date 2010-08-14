@@ -4,6 +4,7 @@ import java.awt.Component;
 
 import javax.swing.JCheckBox;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.TableCellRenderer;
 
 import de.dominik_geyer.jtimesched.project.Project;
@@ -12,6 +13,10 @@ import de.dominik_geyer.jtimesched.project.ProjectTableModel;
 
 @SuppressWarnings("serial")
 public class CheckCellRenderer extends JCheckBox implements TableCellRenderer {
+	public CheckCellRenderer() {
+		this.setOpaque(true);
+		this.setHorizontalAlignment(SwingConstants.CENTER);
+	}
 	
 	@Override
 	public Component getTableCellRendererComponent(JTable table,
