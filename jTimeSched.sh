@@ -2,5 +2,5 @@
 
 JAVA=`which java`
 
-$JAVA -jar jTimeSched.jar
+$JAVA -jar jTimeSched.jar "$@"
 
