@@ -1,9 +1,11 @@
 package de.dominik_geyer.jtimesched.gui.table;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -20,7 +22,9 @@ import de.dominik_geyer.jtimesched.project.ProjectTableModel;
 
 @SuppressWarnings("serial")
 public class ProjectTable extends JTable {
-	private static final int COLUMN_ICON_WIDTH = 22;
+	private static final int ICON_SIZE = 16;
+	private static final int COLUMN_ICON_PADDING = 6;
+	private static final int COLUMN_ICON_SIZE = ICON_SIZE + COLUMN_ICON_PADDING;
 	
 	private JFrame parentFrame;
 	private String highlightString = "";
@@ -34,7 +38,7 @@ public class ProjectTable extends JTable {
 		this.setShowGrid(true);
 		this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.setAutoCreateRowSorter(true);
-		this.setRowHeight(ProjectTable.COLUMN_ICON_WIDTH);
+		this.setRowHeight(ProjectTable.COLUMN_ICON_SIZE);
 		//this.tblSched.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE); // not needed?
 		this.getTableHeader().setReorderingAllowed(false);
 		
@@ -47,6 +51,10 @@ public class ProjectTable extends JTable {
 		List <RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
 		sortKeys.add(new RowSorter.SortKey(ProjectTableModel.COLUMN_CREATED, SortOrder.ASCENDING));
 		this.getRowSorter().setSortKeys(sortKeys);
+		
+		
+		// determine minimum size of a checkbox without text
+		final Dimension chkSize = (new JCheckBox()).getMinimumSize();
 		
 		
 		// define and set column properties
@@ -64,8 +72,8 @@ public class ProjectTable extends JTable {
 				{
 					ProjectTableModel.COLUMN_CHECK,
 					-1,
-					ProjectTable.COLUMN_ICON_WIDTH,
-					ProjectTable.COLUMN_ICON_WIDTH,
+					chkSize.width + ProjectTable.COLUMN_ICON_PADDING,
+					chkSize.width + ProjectTable.COLUMN_ICON_PADDING,
 					new CheckCellRenderer(),
 					null
 				},
@@ -80,8 +88,8 @@ public class ProjectTable extends JTable {
 				{
 					ProjectTableModel.COLUMN_COLOR,
 					-1,
-					ProjectTable.COLUMN_ICON_WIDTH,
-					ProjectTable.COLUMN_ICON_WIDTH,
+					ProjectTable.COLUMN_ICON_SIZE,
+					ProjectTable.COLUMN_ICON_SIZE,
 					new ColorCellRenderer(),
 					new ColorCellEditor(this.parentFrame)
 				},
@@ -112,16 +120,16 @@ public class ProjectTable extends JTable {
 				{
 					ProjectTableModel.COLUMN_ACTION_DELETE,
 					-1,
-					ProjectTable.COLUMN_ICON_WIDTH,
-					ProjectTable.COLUMN_ICON_WIDTH,
+					ProjectTable.COLUMN_ICON_SIZE,
+					ProjectTable.COLUMN_ICON_SIZE,
 					new CustomCellRenderer(),
 					null
 				},
 				{
 					ProjectTableModel.COLUMN_ACTION_STARTPAUSE,
 					-1,
-					ProjectTable.COLUMN_ICON_WIDTH,
-					ProjectTable.COLUMN_ICON_WIDTH,
+					ProjectTable.COLUMN_ICON_SIZE,
+					ProjectTable.COLUMN_ICON_SIZE,
 					new CustomCellRenderer(),
 					null
 				},
