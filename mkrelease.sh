@@ -3,7 +3,8 @@
 CURDIR=$(pwd)
 TMPDIR=$CURDIR/tmp
 
-AUX_FILES="data ChangeLog.txt LICENSE.txt jTimeSched.ico jTimeSched.png jTimeSched.sh"
+AUX_FILES="data ChangeLog.txt LICENSE.txt jTimeSched.png"
+AUX_FILES="$AUX_FILES launcher/jTimeSched.sh launcher/jTimeSched.exe"
 AUX_FILES="$AUX_FILES src"    	# add soures as well, as we are GPLv3
 
 
@@ -14,10 +15,6 @@ function dist_prepare()
 	# remove old working files
 	rm -rf $TMPDIR $CURDIR/jTimeSched.zip 2>/dev/null
 	mkdir -p $TMPDIR
-	
-	
-	# copy manifest
-	cp -a -t $TMPDIR Manifest.txt
 	
 	# copy all needed files
 	for i in $AUX_FILES ; do
@@ -59,7 +56,7 @@ function dist_jar()
 	cd $TMPDIR
 	
 	# create the jar-package
-	jar cfm jTimeSched.jar Manifest.txt -C bin/ .
+	jar cfm jTimeSched.jar $CURDIR/Manifest.txt -C bin/ .
 	
 	# set the executable bits for the jar
 	chmod a+x jTimeSched.jar
@@ -91,7 +88,7 @@ function dist_zip()
 	# create a zip-package
 	cd $TMPDIR
 	
-	zip -r -9 -q ../jTimeSched.zip jTimeSched.jar $AUX_FILES
+	zip -r -9 -q ../jTimeSched.zip . -x bin/\*
 	
 	cd $CURDIR
 }
