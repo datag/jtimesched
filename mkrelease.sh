@@ -1,5 +1,10 @@
 #!/bin/bash
 
+RELEASE_EXTRA=
+if [[ -n $1 ]]; then
+	RELEASE_EXTRA="-$1"
+fi
+
 CURDIR=$(pwd)
 TMPDIR=$CURDIR/tmp
 
@@ -13,7 +18,7 @@ function dist_prepare()
 	echo "Preparing..."
 	
 	# remove old working files
-	rm -rf $TMPDIR $CURDIR/jTimeSched.zip 2>/dev/null
+	rm -rf $TMPDIR 2>/dev/null
 	mkdir -p $TMPDIR
 	
 	# copy all needed files
@@ -88,7 +93,8 @@ function dist_zip()
 	# create a zip-package
 	cd $TMPDIR
 	
-	zip -r -9 -q ../jTimeSched.zip . -x bin/\*
+	rm $CURDIR/jTimeSched${RELEASE_EXTRA}.zip 2>/dev/null
+	zip -r -9 -q $CURDIR/jTimeSched${RELEASE_EXTRA}.zip . -x bin/\*
 	
 	cd $CURDIR
 }
