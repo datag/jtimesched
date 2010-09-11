@@ -35,7 +35,10 @@ public class ProjectSerializer {
 	}
 	
 
-	public void writeXml(List<Project> projects) throws TransformerConfigurationException, SAXException, IOException {
+	// Calling this method from a shutdown hook won't work because
+	// SAXTransformerFactory which uses the Services API which might
+	// become unavailable. Also, it's not thread safe.
+	public synchronized void writeXml(List<Project> projects) throws TransformerConfigurationException, SAXException, IOException {
 		OutputStreamWriter out = new OutputStreamWriter(
 				new FileOutputStream(filename), "UTF8");
 		StreamResult streamResult = new StreamResult(out);
@@ -63,7 +66,7 @@ public class ProjectSerializer {
 		  addXmlElement(hd, "title", null, p.getTitle());
 		  addXmlElement(hd, "created", null, new Long(p.getTimeCreated().getTime()));
 		  addXmlElement(hd, "started", null, new Long(p.getTimeStart().getTime()));
-		  addXmlElement(hd, "running", null, p.isRunning() ? "yes" : "no");
+		  addXmlElement(hd, "running", null, "no" /*p.isRunning() ? "yes" : "no"*/);
 		  addXmlElement(hd, "checked", null, p.isChecked() ? "yes" : "no");
 		  
 		  atts.clear();
@@ -87,6 +90,7 @@ public class ProjectSerializer {
 		
 		hd.endDocument();
 		
+		out.flush();
 		out.close();
 	}
 	
