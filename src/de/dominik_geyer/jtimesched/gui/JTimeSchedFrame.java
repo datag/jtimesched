@@ -71,18 +71,12 @@ public class JTimeSchedFrame extends JFrame {
 	private JTextField tfHighlight;
 	
 	private ArrayList<Project> arPrj = new ArrayList<Project>();
-	private Thread saveProjectsHook;
+	private Timer saveTimer;
 	
 	private boolean initiallyVisible = true;
 	
 	public JTimeSchedFrame() {
 		super("jTimeSched (" + JTimeSchedApp.APP_VERSION + ")");
-		
-		
-		// set shutdown hook
-		this.saveProjectsHook = new Thread(new ShutdownActions());
-		Runtime.getRuntime().addShutdownHook(this.saveProjectsHook);
-		
 		
 		this.setIconImage(JTimeSchedFrame.trayDefaultImage);
 		this.setPreferredSize(new Dimension(600, 200));
@@ -115,8 +109,6 @@ public class JTimeSchedFrame extends JFrame {
 						"Error loading project data",
 						JOptionPane.ERROR_MESSAGE);
 				
-				// do not call shutdown hook on exit
-				Runtime.getRuntime().removeShutdownHook(this.saveProjectsHook);
 				System.exit(1);
 			}
 		}
@@ -206,14 +198,27 @@ public class JTimeSchedFrame extends JFrame {
 		}
 		
 		
-		// setup GUI update timer
-		Timer timer = new Timer(1000, new ActionListener() {
+		// setup projects-save timer, interval 60 seconds
+		saveTimer = new Timer(60*1000, new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent ae) {
+				saveProjects();
+			}
+		});
+		
+		saveTimer.setRepeats(true);
+		saveTimer.start();
+		
+		
+		// setup GUI update timer
+		Timer timer = new Timer(1*1000, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ae) {
 				updateGUI();
 			}
 		});
 		
+		//timer.setInitialDelay(0);
 		timer.setRepeats(true);
 		timer.start();
 		
@@ -434,6 +439,10 @@ public class JTimeSchedFrame extends JFrame {
 			ActionListener exitListener = new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					
+					// save projects
+					saveTimer.stop();
+					saveProjects();
+					
 					// store settings
 					try {
 						JTimeSchedFrame.this.saveSettings();
@@ -505,31 +514,15 @@ public class JTimeSchedFrame extends JFrame {
 
 	}
 	
-	class ShutdownActions implements Runnable {
-
-		public void run() {
-			for (Project p: JTimeSchedFrame.this.arPrj) {
-				if (p.isRunning()) {
-					try {
-						p.pause();
-					} catch (ProjectException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-
-			try {
-				ProjectSerializer ps = new ProjectSerializer(JTimeSchedApp.PRJ_FILE);
-				ps.writeXml(JTimeSchedFrame.this.arPrj);
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
-			
-			System.out.println("Exiting...");
+	public void saveProjects() {
+		try {
+			ProjectSerializer ps = new ProjectSerializer(JTimeSchedApp.PRJ_FILE);
+			ps.writeXml(JTimeSchedFrame.this.arPrj);
+		} catch (Exception e) {
+			JTimeSchedApp.getLogger().severe("Error saving project file: " + e.getMessage());
+			e.printStackTrace();
 		}
-
 	}
-	
 	
 	public void loadSettings() throws Exception {
 		FileInputStream fis = null;
