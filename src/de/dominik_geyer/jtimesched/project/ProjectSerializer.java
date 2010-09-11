@@ -37,7 +37,7 @@ public class ProjectSerializer {
 
 	public void writeXml(List<Project> projects) throws TransformerConfigurationException, SAXException, IOException {
 		OutputStreamWriter out = new OutputStreamWriter(
-				new FileOutputStream(filename), "UTF-8");
+				new FileOutputStream(filename), "UTF8");
 		StreamResult streamResult = new StreamResult(out);
 		SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 		
