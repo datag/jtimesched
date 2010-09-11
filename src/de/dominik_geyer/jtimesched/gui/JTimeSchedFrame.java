@@ -37,8 +37,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.RowSorter;
@@ -122,6 +124,8 @@ public class JTimeSchedFrame extends JFrame {
 		
 		// listen on table-clicks
 		this.tblSched.addMouseListener(new TimeSchedTableMouseListener());
+		this.tblSched.getTableHeader().addMouseListener(new TimeSchedTableHeaderMouseListener());
+		
 
 		// add table to a scroll-pane
 		JScrollPane spSched = new JScrollPane(this.tblSched);
@@ -224,6 +228,8 @@ public class JTimeSchedFrame extends JFrame {
 		
 		
 		// initially refresh GUI values
+		// Note: we need to do the initial update before the pack(), so
+		// timer.setInitialDelay(0) for the update timer isn't enough
 		this.updateGUI();
 		
 		
@@ -615,4 +621,57 @@ public class JTimeSchedFrame extends JFrame {
 			}
 		}
 	}
+	
+	class TimeSchedTableHeaderMouseListener extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			this.showPopup(e);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			this.showPopup(e);
+		}
+
+		private void showPopup(MouseEvent e) {
+			if (!e.isPopupTrigger())
+				return;
+
+			Point p = e.getPoint();
+			int selColumn = tblSched.getTableHeader().columnAtPoint(p);
+			int column = tblSched.convertColumnIndexToModel(selColumn);
+
+			switch (column) {
+			case ProjectTableModel.COLUMN_CHECK:
+				class CheckActionListener implements ActionListener {
+					private boolean check;
+					
+					public CheckActionListener(boolean check) {
+						this.check = check;
+					}
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						for (Project p: arPrj) {
+							p.setChecked(this.check);
+						}
+						updateSchedTable();
+					}
+				};
+				
+				JPopupMenu popup = new JPopupMenu();
+				JMenuItem itemCheck = new JMenuItem("Check all");
+				itemCheck.addActionListener(new CheckActionListener(true));
+				JMenuItem itemUncheck = new JMenuItem("Uncheck all");
+				itemUncheck.addActionListener(new CheckActionListener(false));
+				
+				popup.add(itemCheck);
+				popup.add(itemUncheck);
+				popup.show(e.getComponent(), e.getX(), e.getY());
+
+				break;
+			}
+		}
+	}
+
 }
