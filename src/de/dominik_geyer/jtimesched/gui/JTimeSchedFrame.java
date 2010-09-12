@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -113,6 +114,23 @@ public class JTimeSchedFrame extends JFrame {
 				
 				System.exit(1);
 			}
+			
+			
+			// create a backup of project-file
+			// Note: Path.copyTo() of NIO is only available in >=JDK7
+			try {
+				FileInputStream fis  = new FileInputStream(file);
+		    	FileOutputStream fos = new FileOutputStream(new File(JTimeSchedApp.PRJ_FILE + ".backup"));
+		    	
+		        byte[] buf = new byte[1024];
+		        int i = 0;
+		        while ((i = fis.read(buf)) != -1) {
+		            fos.write(buf, 0, i);
+		        }
+			} catch (Exception e) {
+		    	e.printStackTrace();
+		    	JTimeSchedApp.getLogger().warning("Unable to create backup of project file.");
+		    }
 		}
 		
 		
