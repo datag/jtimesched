@@ -144,6 +144,7 @@ public class JTimeSchedFrame extends JFrame {
 		this.tblSched.addMouseListener(new TimeSchedTableMouseListener());
 		this.tblSched.getTableHeader().addMouseListener(new TimeSchedTableHeaderMouseListener());
 		
+		this.tblSched.addKeyListener(new TimeSchedTableKeyListener());
 
 		// add table to a scroll-pane
 		JScrollPane spSched = new JScrollPane(this.tblSched);
@@ -345,7 +346,7 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
-	public void handleStartPause(ProjectTableModel tstm, Project prj, int row, int column) {
+	public void handleStartPause(ProjectTableModel tstm, Project prj) {
 		JTimeSchedApp.getLogger().info(String.format("%s project '%s' (time overall: %s, time today: %s)",
 				(prj.isRunning()) ? "Pausing" : "Starting",
 				prj.getTitle(),
@@ -375,7 +376,7 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
-	public void handleDelete(ProjectTableModel tstm, Project prj, int row, int column) {
+	public void handleDelete(ProjectTableModel tstm, Project prj, int row) {
 //		int response = JOptionPane.showConfirmDialog(
 //				this,
 //				"Remove project \"" + prj.getTitle() + "\" from list?",
@@ -631,10 +632,10 @@ public class JTimeSchedFrame extends JFrame {
 			switch (column) {
 			case ProjectTableModel.COLUMN_ACTION_DELETE:
 				if (e.getClickCount() == 2)
-					handleDelete(tstm, prj, row, column);
+					handleDelete(tstm, prj, row);
 				break;
 			case ProjectTableModel.COLUMN_ACTION_STARTPAUSE:
-				handleStartPause(tstm, prj, row, column);
+				handleStartPause(tstm, prj);
 				break;
 			}
 		}
@@ -691,5 +692,41 @@ public class JTimeSchedFrame extends JFrame {
 			}
 		}
 	}
+	
+	class TimeSchedTableKeyListener implements KeyListener {
+		@Override
+		public void keyPressed(KeyEvent e) {
+			int keyCode = e.getKeyCode();
+			
+			int selRow = tblSched.getSelectedRow();
+			if (selRow == -1)
+				return;
+			
+			int row = tblSched.convertRowIndexToModel(selRow);
+			
+			ProjectTableModel ptm = (ProjectTableModel) tblSched.getModel();
+			Project p = ptm.getProjectAt(row);
+			
+			switch (keyCode) {
+			case KeyEvent.VK_SPACE:
+				handleStartPause(ptm, p);
+				e.consume();
+				break;
+			case KeyEvent.VK_INSERT:
+				handleNewButton();
+				e.consume();
+				break;
+			case KeyEvent.VK_DELETE:
+				handleDelete(ptm, p, row);
+				e.consume();
+				break;
+			}
+		}
 
+		@Override
+		public void keyReleased(KeyEvent e) {}
+
+		@Override
+		public void keyTyped(KeyEvent e) {}
+	}
 }

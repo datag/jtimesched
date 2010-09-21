@@ -105,6 +105,18 @@ public class Project {
 		this.running = false;
 	}
 	
+	public void toggle() {
+		try {
+			if (this.isRunning()) {
+				this.pause();
+			} else {
+				this.start();
+			}
+		} catch (ProjectException e) {
+			// I don't care... eat it
+		}
+	}
+	
 	public int getSecondsToday() {
 		int seconds = this.secondsToday;
 		
