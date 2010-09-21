@@ -63,17 +63,19 @@ import de.dominik_geyer.jtimesched.project.ProjectTime;
 @SuppressWarnings("serial")
 public class JTimeSchedFrame extends JFrame {
 	
-	
 	private TrayIcon trayIcon;
 	private boolean runningState = false;
 	private static final Image trayDefaultImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "jtimesched-inactive.png");
 	private static final Image trayRunningImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "jtimesched-active.png");
+	private MenuItem itemToggleProject;
 	
 	private ProjectTable tblSched;
 	private JLabel lblOverall;
 	private JTextField tfHighlight;
 	
 	private ArrayList<Project> arPrj = new ArrayList<Project>();
+	private Project currentProject;
+	
 	private Timer saveTimer;
 	
 	private boolean initiallyVisible = true;
@@ -346,7 +348,7 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
-	public void handleStartPause(ProjectTableModel tstm, Project prj) {
+	public void handleStartPause(Project prj) {
 		JTimeSchedApp.getLogger().info(String.format("%s project '%s' (time overall: %s, time today: %s)",
 				(prj.isRunning()) ? "Pausing" : "Starting",
 				prj.getTitle(),
@@ -367,6 +369,11 @@ public class JTimeSchedFrame extends JFrame {
 				// set project to run-state
 				prj.start();
 			}
+			
+			this.currentProject = prj;
+			this.itemToggleProject.setLabel(
+					(prj.isRunning()?"Pause":"Start")+" \""+prj.getTitle()+"\"");
+			itemToggleProject.setEnabled(true);
 		} catch (ProjectException ex) {
 			ex.printStackTrace();
 		}
@@ -385,6 +392,12 @@ public class JTimeSchedFrame extends JFrame {
 //		
 //		if (response != JOptionPane.YES_OPTION)
 //			return;
+		
+		if (this.currentProject == prj) {
+			this.currentProject = null;
+			itemToggleProject.setLabel("Toggle project");
+			itemToggleProject.setEnabled(false);
+		}
 		
 		tstm.removeProject(row);
 		
@@ -447,6 +460,7 @@ public class JTimeSchedFrame extends JFrame {
 			SystemTray tray = SystemTray.getSystemTray();
 			
 			ActionListener aboutListener = new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 
 					JOptionPane.showMessageDialog(null,
@@ -462,6 +476,7 @@ public class JTimeSchedFrame extends JFrame {
 			};
 
 			ActionListener exitListener = new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					
 					// save projects
@@ -484,7 +499,15 @@ public class JTimeSchedFrame extends JFrame {
 					System.exit(0);
 				}
 			};
-
+			
+			ActionListener toggleProjectListener = new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (currentProject != null) {
+						handleStartPause(currentProject);
+					}
+				}
+			};
 
 
 			PopupMenu popup = new PopupMenu();
@@ -494,7 +517,14 @@ public class JTimeSchedFrame extends JFrame {
 			popup.add(itemAbout);
 
 			popup.addSeparator();
+			
+			itemToggleProject = new MenuItem("Toggle project");
+			itemToggleProject.addActionListener(toggleProjectListener);
+			itemToggleProject.setEnabled(false);
+			popup.add(itemToggleProject);
 
+			popup.addSeparator();
+			
 			MenuItem itemExit = new MenuItem("Exit");
 			itemExit.addActionListener(exitListener);
 			popup.add(itemExit);
@@ -635,7 +665,7 @@ public class JTimeSchedFrame extends JFrame {
 					handleDelete(tstm, prj, row);
 				break;
 			case ProjectTableModel.COLUMN_ACTION_STARTPAUSE:
-				handleStartPause(tstm, prj);
+				handleStartPause(prj);
 				break;
 			}
 		}
@@ -709,7 +739,7 @@ public class JTimeSchedFrame extends JFrame {
 			
 			switch (keyCode) {
 			case KeyEvent.VK_SPACE:
-				handleStartPause(ptm, p);
+				handleStartPause(p);
 				e.consume();
 				break;
 			case KeyEvent.VK_INSERT:

@@ -13,7 +13,7 @@ import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
 import de.dominik_geyer.jtimesched.misc.PlainTextFormatter;
 
 public class JTimeSchedApp {
-	static public final String APP_VERSION = "0.9";
+	static public final String APP_VERSION = "0.9_beta1";
 	static public final String DATA_PATH = "data/";
 	static public final String IMAGES_PATH = DATA_PATH + "img/";
 	static public final String CONF_PATH = "conf/";
