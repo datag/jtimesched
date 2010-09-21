@@ -47,3 +47,11 @@ release 0.7
 
 release 0.8
 	- fixed: save project data as UTF-8 no matter what encoding is set by system locale
+
+release 0.9
+	- start/pause current project via tray-menu
+	- created Java application launcher (Windows & Unix)
+	- added keyboard shortcuts for start/pause, new and delete project
+	- on startup copy project file as backup
+	- option for removing all general-purpose checkboxes at once
+	- worked around bug where projects were not saved on a hard shutdown
