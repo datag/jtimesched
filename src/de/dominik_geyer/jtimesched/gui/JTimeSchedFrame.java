@@ -347,6 +347,17 @@ public class JTimeSchedFrame extends JFrame {
 		this.lblOverall.setText(strStats);
 	}
 	
+	protected void updateTrayCurrentProject() {
+		if (this.currentProject == null) {
+			itemToggleProject.setLabel("Toggle project");
+			itemToggleProject.setEnabled(false);
+		} else {
+			this.itemToggleProject.setLabel(
+					(this.currentProject.isRunning()?"Pause":"Start") +
+					" \""+this.currentProject.getTitle()+"\"");
+			itemToggleProject.setEnabled(true);
+		}
+	}
 	
 	public void handleStartPause(Project prj) {
 		JTimeSchedApp.getLogger().info(String.format("%s project '%s' (time overall: %s, time today: %s)",
@@ -371,9 +382,8 @@ public class JTimeSchedFrame extends JFrame {
 			}
 			
 			this.currentProject = prj;
-			this.itemToggleProject.setLabel(
-					(prj.isRunning()?"Pause":"Start")+" \""+prj.getTitle()+"\"");
-			itemToggleProject.setEnabled(true);
+			this.updateTrayCurrentProject();
+			
 		} catch (ProjectException ex) {
 			ex.printStackTrace();
 		}
@@ -383,7 +393,7 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
-	public void handleDelete(ProjectTableModel tstm, Project prj, int row) {
+	public void handleDelete(ProjectTableModel tstm, Project prj, int modelRow) {
 //		int response = JOptionPane.showConfirmDialog(
 //				this,
 //				"Remove project \"" + prj.getTitle() + "\" from list?",
@@ -393,14 +403,12 @@ public class JTimeSchedFrame extends JFrame {
 //		if (response != JOptionPane.YES_OPTION)
 //			return;
 		
-		if (this.currentProject == prj) {
+		if (this.currentProject == prj)
 			this.currentProject = null;
-			itemToggleProject.setLabel("Toggle project");
-			itemToggleProject.setEnabled(false);
-		}
 		
-		tstm.removeProject(row);
+		tstm.removeProject(modelRow);
 		
+		this.updateTrayCurrentProject();
 		this.updateStatsLabel();
 	}
 	
@@ -503,8 +511,8 @@ public class JTimeSchedFrame extends JFrame {
 			ActionListener toggleProjectListener = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (currentProject != null) {
-						handleStartPause(currentProject);
+					if (JTimeSchedFrame.this.currentProject != null) {
+						handleStartPause(JTimeSchedFrame.this.currentProject);
 					}
 				}
 			};
@@ -689,7 +697,9 @@ public class JTimeSchedFrame extends JFrame {
 			Point p = e.getPoint();
 			int selColumn = tblSched.getTableHeader().columnAtPoint(p);
 			int column = tblSched.convertColumnIndexToModel(selColumn);
-
+			
+			JPopupMenu popup = new JPopupMenu();
+			
 			switch (column) {
 			case ProjectTableModel.COLUMN_CHECK:
 				class CheckActionListener implements ActionListener {
@@ -708,7 +718,6 @@ public class JTimeSchedFrame extends JFrame {
 					}
 				};
 				
-				JPopupMenu popup = new JPopupMenu();
 				JMenuItem itemCheck = new JMenuItem("Check all");
 				itemCheck.addActionListener(new CheckActionListener(true));
 				JMenuItem itemUncheck = new JMenuItem("Uncheck all");
@@ -719,6 +728,27 @@ public class JTimeSchedFrame extends JFrame {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 
 				break;
+
+			case ProjectTableModel.COLUMN_ACTION_DELETE:
+				JMenuItem itemDelete = new JMenuItem("Delete all");
+				itemDelete.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						ProjectTableModel ptm = (ProjectTableModel) JTimeSchedFrame.this.tblSched.getModel();
+						
+						// make use of table model's removeProject method
+						while (ptm.getRowCount() > 0) {
+							ptm.removeProject(0);
+						}
+						JTimeSchedFrame.this.currentProject = null;
+						
+						JTimeSchedFrame.this.updateStatsLabel();
+						JTimeSchedFrame.this.updateTrayCurrentProject();
+					}
+				});
+				
+				popup.add(itemDelete);
+				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		}
 	}
