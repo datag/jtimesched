@@ -421,13 +421,14 @@ public class JTimeSchedFrame extends JFrame {
 		
 		
 		// get recently added row (view index)
-		int row = this.tblSched.convertRowIndexToView(tstm.getRowCount() - 1);
+		int viewRow = this.tblSched.convertRowIndexToView(tstm.getRowCount() - 1);
+		int viewColumn = this.tblSched.convertColumnIndexToView(ProjectTableModel.COLUMN_TITLE);
 		
 		// start editing cell
-		this.tblSched.editCellAt(row, ProjectTableModel.COLUMN_TITLE);
+		this.tblSched.editCellAt(viewRow, viewColumn);
 		
 		// scroll to row/cell
-		this.tblSched.changeSelection(row, ProjectTableModel.COLUMN_TITLE, false, false);
+		this.tblSched.changeSelection(viewRow, viewColumn, false, false);
 
 		// select all text if component is a textfield
 		Component ec = this.tblSched.getEditorComponent();

@@ -33,12 +33,13 @@ public class CustomCellRenderer extends JLabel implements TableCellRenderer {
 		
 		ProjectTableModel tstm = (ProjectTableModel) table.getModel();
 		int modelRow = table.convertRowIndexToModel(row);
+		int modelColumn = table.convertColumnIndexToModel(column);
 		Project prj = tstm.getProjectAt(modelRow);
 		
 		
 		String text = null;
 		
-		switch (column) {
+		switch (modelColumn) {
 		case ProjectTableModel.COLUMN_TITLE:
 			this.setText((String)value);
 			
