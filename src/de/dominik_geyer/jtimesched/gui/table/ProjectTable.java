@@ -106,7 +106,7 @@ public class ProjectTable extends JTable {
 					95,
 					60,
 					95,
-					new CustomCellRenderer(),
+					new TimeCellRenderer(),
 					new TimeCellEditor()
 				},
 				{
@@ -114,7 +114,7 @@ public class ProjectTable extends JTable {
 					95,
 					60,
 					95,
-					new CustomCellRenderer(),
+					new TimeCellRenderer(),
 					new TimeCellEditor()
 				},
 				{

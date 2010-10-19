@@ -74,6 +74,11 @@ public class ProjectSerializer {
 		  addXmlAttribute(atts, "today", new Integer(p.getSecondsToday()));
 		  addXmlElement(hd, "time", atts, null);
 		  
+		  atts.clear();
+		  addXmlAttribute(atts, "overall", new Integer(p.getQuotaOverall()));
+		  addXmlAttribute(atts, "today", new Integer(p.getQuotaToday()));
+		  addXmlElement(hd, "quota", atts, null);
+		  
 		  Color color = p.getColor();
 		  if (color != null) {
 			  atts.clear();
@@ -134,6 +139,15 @@ public class ProjectSerializer {
 			p.setSecondsToday(seconds);
 			
 			NodeList pnl;
+			pnl = pe.getElementsByTagName("quota");
+			if (pnl.getLength() != 0) {
+				e = (Element) pnl.item(0);
+				seconds = Integer.parseInt(e.getAttribute("overall"));
+				p.setQuotaOverall(seconds);
+				seconds = Integer.parseInt(e.getAttribute("today"));
+				p.setQuotaToday(seconds);
+			}
+			
 			pnl = pe.getElementsByTagName("color");
 			if (pnl.getLength() != 0) {
 				e = (Element) pnl.item(0);

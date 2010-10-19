@@ -16,7 +16,6 @@ import javax.swing.table.TableCellRenderer;
 import de.dominik_geyer.jtimesched.JTimeSchedApp;
 import de.dominik_geyer.jtimesched.project.Project;
 import de.dominik_geyer.jtimesched.project.ProjectTableModel;
-import de.dominik_geyer.jtimesched.project.ProjectTime;
 
 
 @SuppressWarnings("serial")
@@ -50,12 +49,6 @@ public class CustomCellRenderer extends JLabel implements TableCellRenderer {
 			} else {
 				this.setBorder(null);
 			}
-			break;
-		case ProjectTableModel.COLUMN_TIMEOVERALL:
-		case ProjectTableModel.COLUMN_TIMETODAY:
-			text = ProjectTime.formatSeconds(((Integer)value).intValue());
-			this.setHorizontalAlignment(SwingConstants.RIGHT);
-			this.setText(text);
 			break;
 		case ProjectTableModel.COLUMN_CREATED:
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd" /* HH:mm:ss */);

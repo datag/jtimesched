@@ -13,6 +13,9 @@ public class Project {
 	private int secondsOverall;
 	private int secondsToday;
 	
+	private int quotaOverall;
+	private int quotaToday;
+	
 	private boolean running;
 	private Date timeStart;
 	
@@ -64,15 +67,15 @@ public class Project {
 		this.checked = checked;
 	}
 
-	void setTimeCreated(Date timeCreated) {
+	public void setTimeCreated(Date timeCreated) {
 		this.timeCreated = timeCreated;
 	}
 
-	void setRunning(boolean running) {
+	public void setRunning(boolean running) {
 		this.running = running;
 	}
 
-	void setTimeStart(Date timeStart) {
+	public void setTimeStart(Date timeStart) {
 		this.timeStart = timeStart;
 	}
 
@@ -178,6 +181,22 @@ public class Project {
 		this.timeStart = new Date();
 	}
 	
+	public int getQuotaOverall() {
+		return quotaOverall;
+	}
+
+	public void setQuotaOverall(int quotaOverall) {
+		this.quotaOverall = quotaOverall;
+	}
+
+	public int getQuotaToday() {
+		return quotaToday;
+	}
+
+	public void setQuotaToday(int quotaToday) {
+		this.quotaToday = quotaToday;
+	}
+
 	@Override
 	public String toString() {
 		return String.format("Project [title=%s, running=%s, secondsOverall=%d, secondsToday=%d, checked=%s]",

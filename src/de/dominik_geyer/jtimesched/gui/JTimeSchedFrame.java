@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -648,34 +649,65 @@ public class JTimeSchedFrame extends JFrame {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			//int selRow = tblSched.getSelectedRow();  // detects click into empty space -> not wanted
+			if (tblSched.getRowCount() == 0)
+				return;
+			
 			int selRow = tblSched.rowAtPoint(e.getPoint());
+			int selColumn = tblSched.columnAtPoint(e.getPoint());
 			
-			
-			if (selRow == -1)
+			if (selRow == -1 || selColumn == -1)
 				return;
 			
 			int row = tblSched.convertRowIndexToModel(selRow);
-			int column = tblSched.convertColumnIndexToModel(tblSched.getSelectedColumn());
-			
-			//System.out.println("clicked cell: " + row + ":" + column);
+			int column = tblSched.convertColumnIndexToModel(selColumn);
 			
 			ProjectTableModel tstm = (ProjectTableModel) tblSched.getModel();
-			
-			if (tblSched.getRowCount() == 0 || tblSched.getSelectedRow() == -1)
-				return;
-			
 			Project prj = tstm.getProjectAt(row);
-			System.out.println(prj);
 			
-			switch (column) {
-			case ProjectTableModel.COLUMN_ACTION_DELETE:
-				if (e.getClickCount() == 2)
-					handleDelete(tstm, prj, row);
-				break;
-			case ProjectTableModel.COLUMN_ACTION_STARTPAUSE:
+			int button = e.getButton();
+			if (button == MouseEvent.BUTTON1) {	// left button
+				switch (column) {
+				case ProjectTableModel.COLUMN_ACTION_DELETE:
+					if (e.getClickCount() == 2)
+						handleDelete(tstm, prj, row);
+					break;
+				case ProjectTableModel.COLUMN_ACTION_STARTPAUSE:
+					handleStartPause(prj);
+					break;
+				}
+			} else if (button == MouseEvent.BUTTON2) {	// middle button
 				handleStartPause(prj);
-				break;
+			} else if (button == MouseEvent.BUTTON3) {	// right button
+				switch (column) {
+				case ProjectTableModel.COLUMN_TIMEOVERALL:
+				case ProjectTableModel.COLUMN_TIMETODAY:
+					String input = JOptionPane.showInputDialog(JTimeSchedFrame.this,
+							"Enter new quota for time " +
+								(column == ProjectTableModel.COLUMN_TIMEOVERALL ? "overall" : "today") + ":",
+							ProjectTime.formatSeconds(
+									(column == ProjectTableModel.COLUMN_TIMEOVERALL) ? prj.getQuotaOverall() : prj.getQuotaToday()));
+					
+					if (input != null) {
+						int newSeconds = 0;
+						try {
+							if (!input.isEmpty())
+								newSeconds = ProjectTime.parseSeconds(input);
+							
+							if (column == ProjectTableModel.COLUMN_TIMEOVERALL)
+								prj.setQuotaOverall(newSeconds);
+							else
+								prj.setQuotaToday(newSeconds);
+							
+							tstm.fireTableRowsUpdated(row, row);
+						} catch (ParseException pe) {
+							JOptionPane.showMessageDialog(JTimeSchedFrame.this,
+									"Invalid seconds-string, keeping previous value.",
+									"Invalid input",
+									JOptionPane.ERROR_MESSAGE);
+						}
+					}
+					break;
+				}
 			}
 		}
 	}
