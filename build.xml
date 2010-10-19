@@ -3,7 +3,7 @@
 <project name="jTimeSched" default="zip" basedir=".">
 	<description>jTimeSched build file</description>
 	
-	<property name="version" value="1.0"/>
+	<property name="version" value="x.x"/>
 	<property name="src" location="src"/>
 	<property name="build" location="build"/>
 	<property name="dist"  location="dist"/>

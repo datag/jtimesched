@@ -36,7 +36,9 @@ public class TimeCellComponent extends JLabel {
 			Color color = (this.time < this.quota)
 				? TimeCellComponent.BAR_COLOR
 				: TimeCellComponent.BAR_COLOR_OVERDUE;
-			int width = this.getWidth() * this.time / this.quota;
+			int width = (this.time < this.quota)
+				? this.getWidth() * this.time / this.quota
+				: this.getWidth();
 			
 			g.setColor(color);
 			g.fillRect(0, 0, width, TimeCellComponent.BAR_HEIGHT);
