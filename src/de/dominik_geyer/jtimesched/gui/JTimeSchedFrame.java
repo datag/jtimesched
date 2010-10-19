@@ -750,6 +750,26 @@ public class JTimeSchedFrame extends JFrame {
 				
 				popup.add(itemDelete);
 				popup.show(e.getComponent(), e.getX(), e.getY());
+				
+				break;
+				
+			case ProjectTableModel.COLUMN_COLOR:
+				JMenuItem itemClear = new JMenuItem("Clear all");
+				itemClear.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						for (Project p: arPrj) {
+							p.setColor(null);
+						}
+						updateSchedTable();
+					}
+				});
+				
+				popup.add(itemClear);
+				popup.show(e.getComponent(), e.getX(), e.getY());
+
+				break;
 			}
 		}
 	}
