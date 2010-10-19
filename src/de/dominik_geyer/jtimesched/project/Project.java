@@ -170,12 +170,9 @@ public class Project {
 		this.setSecondsToday(secondsToday);
 	}
 	
-	public void resetOverall() {
-		this.secondsOverall = 0;
-	}
-	
 	public void resetToday() {
 		this.secondsToday = 0;
+		this.quotaToday = 0;
 		
 		// reset time-started
 		this.timeStart = new Date();
