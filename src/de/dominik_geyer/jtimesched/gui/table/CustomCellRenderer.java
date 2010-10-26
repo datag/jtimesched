@@ -3,7 +3,6 @@ package de.dominik_geyer.jtimesched.gui.table;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.ImageIcon;
@@ -16,6 +15,7 @@ import javax.swing.table.TableCellRenderer;
 import de.dominik_geyer.jtimesched.JTimeSchedApp;
 import de.dominik_geyer.jtimesched.project.Project;
 import de.dominik_geyer.jtimesched.project.ProjectTableModel;
+import de.dominik_geyer.jtimesched.project.ProjectTime;
 
 
 @SuppressWarnings("serial")
@@ -51,8 +51,7 @@ public class CustomCellRenderer extends JLabel implements TableCellRenderer {
 			}
 			break;
 		case ProjectTableModel.COLUMN_CREATED:
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd" /* HH:mm:ss */);
-			text = sdf.format((Date)value);
+			text = ProjectTime.formatDate((Date)value);
 			this.setHorizontalAlignment(SwingConstants.CENTER);
 			this.setText(text);
 			break;

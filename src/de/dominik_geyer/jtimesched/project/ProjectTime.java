@@ -1,10 +1,14 @@
 package de.dominik_geyer.jtimesched.project;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ProjectTime {
+	private static final String fmtDate = "yyyy-MM-dd";
+	
 	private ProjectTime() {}
 	
 	public static String formatSeconds(int s) {
@@ -23,5 +27,15 @@ public class ProjectTime {
 		 int seconds = Integer.parseInt(m.group(3));
 		 
 		 return (hours * 3600 + minutes * 60 + seconds);
+	}
+	
+	public static String formatDate(Date d) {
+		SimpleDateFormat sdf = new SimpleDateFormat(ProjectTime.fmtDate);
+		return sdf.format(d);
+	}
+	
+	public static Date parseDate(String strDate) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat(ProjectTime.fmtDate);
+		return sdf.parse(strDate);
 	}
 }

@@ -118,6 +118,7 @@ public class ProjectTableModel extends AbstractTableModel {
 		case ProjectTableModel.COLUMN_CHECK:
 		case ProjectTableModel.COLUMN_TITLE:
 		case ProjectTableModel.COLUMN_COLOR:
+		case ProjectTableModel.COLUMN_CREATED:
 			return true;
 		case ProjectTableModel.COLUMN_TIMEOVERALL:
 		case ProjectTableModel.COLUMN_TIMETODAY:
@@ -149,6 +150,13 @@ public class ProjectTableModel extends AbstractTableModel {
 			break;
 		case ProjectTableModel.COLUMN_COLOR:
 			prj.setColor((Color)value);
+			break;
+		case ProjectTableModel.COLUMN_CREATED:
+			JTimeSchedApp.getLogger().info(String.format("Manually set create date for project '%s' from %s to %s",
+					prj.getTitle(),
+					ProjectTime.formatDate(prj.getTimeCreated()),
+					ProjectTime.formatDate((Date)value)));
+			prj.setTimeCreated((Date)value);
 			break;
 		case ProjectTableModel.COLUMN_TIMEOVERALL:
 		case ProjectTableModel.COLUMN_TIMETODAY:

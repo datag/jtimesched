@@ -99,7 +99,7 @@ public class ProjectTable extends JTable {
 					80,
 					80,
 					new CustomCellRenderer(),
-					null
+					new DateCellEditor()
 				},
 				{
 					ProjectTableModel.COLUMN_TIMEOVERALL,
