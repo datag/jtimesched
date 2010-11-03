@@ -689,7 +689,6 @@ public class JTimeSchedFrame extends JFrame {
 	
 	
 	class TimeSchedTableMouseListener extends MouseAdapter {
-
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (tblSched.getRowCount() == 0)
@@ -749,6 +748,15 @@ public class JTimeSchedFrame extends JFrame {
 									JOptionPane.ERROR_MESSAGE);
 						}
 					}
+					break;
+				case ProjectTableModel.COLUMN_TITLE:
+					NotesDialog dialog = new NotesDialog(JTimeSchedFrame.this, prj.getNotes());
+					dialog.setVisible(true);
+					
+					if (dialog.isConfirmed()) {
+						prj.setNotes(dialog.getInputText());
+					}
+					
 					break;
 				}
 			}

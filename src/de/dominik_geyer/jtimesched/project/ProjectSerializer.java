@@ -64,6 +64,7 @@ public class ProjectSerializer {
 		  startXmlElement(hd, "project", null);
 		  
 		  addXmlElement(hd, "title", null, p.getTitle());
+		  addXmlElement(hd, "notes", null, p.getNotes());
 		  addXmlElement(hd, "created", null, new Long(p.getTimeCreated().getTime()));
 		  addXmlElement(hd, "started", null, new Long(p.getTimeStart().getTime()));
 		  addXmlElement(hd, "running", null, "no" /*p.isRunning() ? "yes" : "no"*/);
@@ -116,7 +117,11 @@ public class ProjectSerializer {
 			
 			Element e;
 			e = getFirstElement(pe, "title");
-			p.setTitle(e.getFirstChild().getNodeValue());
+			if (e.getFirstChild() != null) {
+				p.setTitle(e.getFirstChild().getNodeValue());
+			} else {
+				p.setTitle("");
+			}
 			
 			e = getFirstElement(pe, "created");
 			long ts = Long.parseLong(e.getFirstChild().getNodeValue());
@@ -157,6 +162,17 @@ public class ProjectSerializer {
 				int a = Integer.parseInt(e.getAttribute("alpha"));
 				
 				p.setColor(new Color(r, g, b, a));
+			}
+			
+			pnl = pe.getElementsByTagName("notes");
+			if (pnl.getLength() != 0) {
+				e = (Element) pnl.item(0);
+				
+				if (e.getFirstChild() != null) {
+					String notes = e.getFirstChild().getNodeValue();
+				
+					p.setNotes(notes);
+				}
 			}
 			
 			arPrj.add(p);

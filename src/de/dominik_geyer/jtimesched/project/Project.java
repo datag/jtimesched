@@ -6,6 +6,8 @@ import java.util.Date;
 
 public class Project {
 	private String title;
+	private String notes;
+	
 	private Date timeCreated;
 	private Color color;
 	private boolean checked;
@@ -25,6 +27,7 @@ public class Project {
 	
 	public Project(String name) {
 		this.title = name;
+		this.notes = "";
 		this.color = null;
 		
 		this.timeStart = new Date();
@@ -37,6 +40,14 @@ public class Project {
 	
 	public void setTitle(String name) {
 		this.title = name;
+	}
+	
+	public String getNotes() {
+		return notes;
+	}
+	
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 	
 	public Date getTimeCreated() {

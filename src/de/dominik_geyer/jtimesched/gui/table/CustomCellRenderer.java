@@ -49,6 +49,19 @@ public class CustomCellRenderer extends JLabel implements TableCellRenderer {
 			} else {
 				this.setBorder(null);
 			}
+			
+			if (!prj.getNotes().isEmpty()) {
+				String tooltip = prj.getNotes()
+					.replaceAll("(\r\n|\n)", "<br/>")
+					.replaceAll(" ", "&nbsp;")
+					.replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+				this.setToolTipText("<html><strong><u>Notes:</u></strong><br/><br/>" +
+						tooltip +
+						"</html>");
+			} else {
+				this.setToolTipText(null);
+			}
+			
 			break;
 		case ProjectTableModel.COLUMN_CREATED:
 			text = ProjectTime.formatDate((Date)value);
