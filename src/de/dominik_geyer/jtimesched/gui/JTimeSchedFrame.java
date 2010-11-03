@@ -31,6 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 
 import javax.swing.Box;
@@ -44,7 +46,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
@@ -74,6 +78,11 @@ public class JTimeSchedFrame extends JFrame {
 	private JLabel lblOverall;
 	private JTextField tfHighlight;
 	
+	private static final int LOGAREA_HEIGHT = 100;
+	private JScrollPane spLog;
+	private JTextArea tfLog = new JTextArea();
+	private JToggleButton btnLogToggle;
+	
 	private ArrayList<Project> arPrj = new ArrayList<Project>();
 	private Project currentProject;
 	
@@ -86,7 +95,7 @@ public class JTimeSchedFrame extends JFrame {
 		
 		this.setIconImage(JTimeSchedFrame.trayDefaultImage);
 		this.setPreferredSize(new Dimension(600, 200));
-		this.setMinimumSize(new Dimension(480, 150));
+		this.setMinimumSize(new Dimension(520, 150));
 		
 		
 		// create tray-icon and set default close-behavior
@@ -94,6 +103,10 @@ public class JTimeSchedFrame extends JFrame {
 			this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		else
 			this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		
+		// add handler for GUI log
+		JTimeSchedApp.getLogger().addHandler(new JTimeSchedGUILogHandler(this.tfLog));
 		
 		
 		// load project-file
@@ -166,8 +179,7 @@ public class JTimeSchedFrame extends JFrame {
 			}
 		});
 		panelBottom.add(btnAdd);
-		
-		
+			
 		// bottom panel
 		panelBottom.add(Box.createRigidArea(new Dimension(10, 0)));
 		panelBottom.add(Box.createHorizontalGlue());
@@ -176,7 +188,6 @@ public class JTimeSchedFrame extends JFrame {
 		panelBottom.add(this.lblOverall);
 		panelBottom.add(Box.createHorizontalGlue());
 		panelBottom.add(Box.createRigidArea(new Dimension(10, 0)));
-		
 		
 		// highlight editbox
 		this.tfHighlight = new JTextField(6);
@@ -208,9 +219,37 @@ public class JTimeSchedFrame extends JFrame {
 		this.tfHighlight.setMaximumSize(sizeTf);
 		this.tfHighlight.setMaximumSize(sizeTf);
 		panelBottom.add(this.tfHighlight);
+		panelBottom.add(Box.createRigidArea(new Dimension(5, 0)));
 		
-		this.add(panelBottom, BorderLayout.SOUTH);
+		// log toggle button
+		this.btnLogToggle = new JToggleButton(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "log-toggle.png"));
+		this.btnLogToggle.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Boolean isVisible = spLog.isVisible();
+				setSize(getWidth(), getHeight() + JTimeSchedFrame.LOGAREA_HEIGHT * (isVisible ? -1 : 1));
+				spLog.setVisible(!isVisible);
+				spLog.doLayout();
+				doLayout();
+			}}
+		);
+		panelBottom.add(this.btnLogToggle);
 		
+		
+		// logging area
+		this.tfLog.setEditable(false);
+		//this.tfLog.setFont(this.tfLog.getFont().deriveFont(10.0f));
+		this.spLog = new JScrollPane(this.tfLog);
+		this.spLog.setVisible(false);
+		this.spLog.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		this.spLog.setPreferredSize(new Dimension(100 /* ignored */, JTimeSchedFrame.LOGAREA_HEIGHT));
+		
+		
+		// the whole bottom panel
+		JPanel panelBottomAll = new JPanel(new BorderLayout());
+		panelBottomAll.add(panelBottom, BorderLayout.NORTH);
+		panelBottomAll.add(this.spLog, BorderLayout.SOUTH);
+		this.add(panelBottomAll, BorderLayout.SOUTH);
 		
 		
 		// load settings
@@ -219,7 +258,7 @@ public class JTimeSchedFrame extends JFrame {
 			try {
 				this.loadSettings();
 			} catch (Exception e) {
-				e.printStackTrace();
+				JTimeSchedApp.getLogger().warning("Error loading settings, running with defaults.");
 			}
 		}
 		
@@ -254,10 +293,7 @@ public class JTimeSchedFrame extends JFrame {
 		// timer.setInitialDelay(0) for the update timer isn't enough
 		this.updateGUI();
 		
-		
 		this.pack();
-		
-		
 		this.setVisible(this.initiallyVisible);
 	}
 	
@@ -605,6 +641,10 @@ public class JTimeSchedFrame extends JFrame {
 			this.setLocation((Point) in.readObject());
 			this.initiallyVisible = in.readBoolean();
 			
+			Boolean logVisible = in.readBoolean();
+			this.spLog.setVisible(logVisible);
+			this.btnLogToggle.setSelected(logVisible);
+			
 			int sortColumn = in.readInt();
 			boolean sortAsc = in.readBoolean();
 			List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
@@ -631,6 +671,7 @@ public class JTimeSchedFrame extends JFrame {
 			out.writeObject(this.getSize());
 			out.writeObject(this.getLocation());
 			out.writeBoolean(this.isVisible());
+			out.writeBoolean(this.spLog.isVisible());
 			
 			List<? extends SortKey> sortKeys =  this.tblSched.getRowSorter().getSortKeys();
 			RowSorter.SortKey sortKey = sortKeys.get(0);
@@ -841,5 +882,28 @@ public class JTimeSchedFrame extends JFrame {
 
 		@Override
 		public void keyTyped(KeyEvent e) {}
+	}
+	
+	class JTimeSchedGUILogHandler extends Handler {
+		private JTextArea logArea;
+		
+		public JTimeSchedGUILogHandler(JTextArea ta) {
+			this.logArea = ta;
+		}
+		
+		@Override
+		public void close() throws SecurityException {}
+
+		@Override
+		public void flush() {}
+
+		@Override
+		public void publish(LogRecord lr) {
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+			String line = String.format("%s %s%n",
+					sdf.format(new Date(lr.getMillis())),
+					lr.getMessage());
+			this.logArea.append(line);
+		}
 	}
 }
