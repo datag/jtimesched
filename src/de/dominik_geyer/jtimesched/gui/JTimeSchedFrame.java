@@ -161,7 +161,7 @@ public class JTimeSchedFrame extends JFrame {
 		this.tblSched.getTableHeader().addMouseListener(new TimeSchedTableHeaderMouseListener());
 		
 		this.tblSched.addKeyListener(new TimeSchedTableKeyListener());
-
+		
 		// add table to a scroll-pane
 		JScrollPane spSched = new JScrollPane(this.tblSched);
 		this.add(spSched, BorderLayout.CENTER);
@@ -223,6 +223,7 @@ public class JTimeSchedFrame extends JFrame {
 		
 		// log toggle button
 		this.btnLogToggle = new JToggleButton(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "log-toggle.png"));
+		this.btnLogToggle.setToolTipText("toggle log area");
 		this.btnLogToggle.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -294,6 +295,7 @@ public class JTimeSchedFrame extends JFrame {
 		this.updateGUI();
 		
 		this.pack();
+		this.tblSched.requestFocusInWindow();
 		this.setVisible(this.initiallyVisible);
 	}
 	
@@ -852,6 +854,12 @@ public class JTimeSchedFrame extends JFrame {
 		public void keyPressed(KeyEvent e) {
 			int keyCode = e.getKeyCode();
 			
+			if (keyCode == KeyEvent.VK_INSERT) {
+				handleNewButton();
+				e.consume();
+				return;
+			}
+			
 			int selRow = tblSched.getSelectedRow();
 			if (selRow == -1)
 				return;
@@ -864,10 +872,6 @@ public class JTimeSchedFrame extends JFrame {
 			switch (keyCode) {
 			case KeyEvent.VK_SPACE:
 				handleStartPause(p);
-				e.consume();
-				break;
-			case KeyEvent.VK_INSERT:
-				handleNewButton();
 				e.consume();
 				break;
 			case KeyEvent.VK_DELETE:
