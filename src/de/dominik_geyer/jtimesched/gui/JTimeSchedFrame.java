@@ -91,7 +91,7 @@ public class JTimeSchedFrame extends JFrame {
 	private boolean initiallyVisible = true;
 	
 	public JTimeSchedFrame() {
-		super("jTimeSched (" + JTimeSchedApp.APP_VERSION + ")");
+		super("jTimeSched");
 		
 		this.setIconImage(JTimeSchedFrame.trayDefaultImage);
 		this.setPreferredSize(new Dimension(600, 200));
@@ -510,16 +510,15 @@ public class JTimeSchedFrame extends JFrame {
 			ActionListener aboutListener = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-
 					JOptionPane.showMessageDialog(null,
-							"jTimeSched\nVersion " +
-								JTimeSchedApp.APP_VERSION + "\n\n" +
-								"written by Dominik D. Geyer\n" +
-								"<devel@dominik-geyer.de>\n\n" +
-								"released under the GPLv3 license",
+							"<html><big>jTimeSched</big><br/>Version " +
+								JTimeSchedApp.APP_VERSION + "<br/><br/>" +
+								"written by Dominik D. Geyer<br/>" +
+								"&lt;devel@dominik-geyer.de&gt;<br/><br/>" +
+								"released under the GPLv3 license</html>",
 							"About jTimeSched",
 							JOptionPane.INFORMATION_MESSAGE,
-							new ImageIcon(JTimeSchedFrame.trayDefaultImage));
+							new ImageIcon(JTimeSchedFrame.trayRunningImage));
 				}
 			};
 
