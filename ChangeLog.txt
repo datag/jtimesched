@@ -55,3 +55,11 @@ release 0.9
 	- on startup copy project file as backup
 	- option for removing all general-purpose checkboxes at once
 	- worked around bug where projects were not saved on a hard shutdown
+
+release 1.0
+	- fixed inserting a new project with shortcut key when no table row selected
+	- date of creation can now be edited
+	- option for removing and color-reset all entries
+	- added quota option for time today and overall
+	- additional notes for a project
+	- added a log area, which visibility can be toggled
