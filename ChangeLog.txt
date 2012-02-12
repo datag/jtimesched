@@ -66,6 +66,7 @@ release 1.0
 
 release 1.1
 	- show time-quota on mouse-mouse over overall/today cell
+	- indicate present quota by a little blue dot in cell
 	- automatically un-check projects on today-time-reset
 	- ampersand-character in project-title not shown in tray-tooltip
 
