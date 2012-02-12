@@ -63,3 +63,9 @@ release 1.0
 	- added quota option for time today and overall
 	- additional notes for a project
 	- added a log area, which visibility can be toggled
+
+release 1.1
+	- show time-quota on mouse-mouse over overall/today cell
+	- automatically un-check projects on today-time-reset
+	- ampersand-character in project-title not shown in tray-tooltip
+
