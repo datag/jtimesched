@@ -342,6 +342,11 @@ public class JTimeSchedFrame extends JFrame {
 						ProjectTime.formatSeconds(runningProject.getSecondsToday()));
 			}
 			
+			// escape ampersand-character on windows
+			if (System.getProperty("os.name").startsWith("Windows")) {
+				strTray = strTray.replaceAll("&", "&&");
+			}
+			
 			this.trayIcon.setToolTip(strTray);
 			
 			

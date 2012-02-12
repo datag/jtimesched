@@ -52,9 +52,11 @@ public class CustomCellRenderer extends JLabel implements TableCellRenderer {
 			
 			if (!prj.getNotes().isEmpty()) {
 				String tooltip = prj.getNotes()
+					.replaceAll("&", "&amp;")
 					.replaceAll("(\r\n|\n)", "<br/>")
 					.replaceAll(" ", "&nbsp;")
 					.replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+				
 				this.setToolTipText("<html><strong><u>Notes:</u></strong><br/><br/>" +
 						tooltip +
 						"</html>");
