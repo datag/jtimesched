@@ -498,11 +498,13 @@ public class JTimeSchedFrame extends JFrame {
 			String strStartDay = sdf.format(p.getTimeStart());
 			
 			if (!strCurrentDay.equals(strStartDay)) {
-				JTimeSchedApp.getLogger().info(String.format("Resetting time today for project '%s' (previous time: %s)",
+				JTimeSchedApp.getLogger().info(String.format("Resetting project '%s' (previous time: %s; checked: %s)",
 						p.getTitle(),
-						ProjectTime.formatSeconds(p.getSecondsToday())));
+						ProjectTime.formatSeconds(p.getSecondsToday()),
+						(p.isChecked() ? "yes" : "no")));
 				
-				p.resetToday();
+				p.resetToday();			// reset time today
+				p.setChecked(false);	// uncheck project
 			}
 		}
 	}
