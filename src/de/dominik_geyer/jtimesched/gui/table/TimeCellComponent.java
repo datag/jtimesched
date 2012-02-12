@@ -50,7 +50,7 @@ public class TimeCellComponent extends JLabel {
 			} else {
 				// indicate quota if bar not yet visible
 				g.setColor(TimeCellComponent.HASQUOTA_COLOR);
-				g.fillRect(0, this.getHeight() - TimeCellComponent.HASQUOTA_HEIGHT - 1, TimeCellComponent.HASQUOTA_HEIGHT, TimeCellComponent.HASQUOTA_HEIGHT);
+				g.fillRect(0, this.getHeight() - TimeCellComponent.HASQUOTA_HEIGHT, TimeCellComponent.HASQUOTA_HEIGHT, TimeCellComponent.HASQUOTA_HEIGHT);
 			}
 		}
 	}
