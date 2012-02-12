@@ -9,6 +9,7 @@ import javax.swing.table.TableCellRenderer;
 
 import de.dominik_geyer.jtimesched.project.Project;
 import de.dominik_geyer.jtimesched.project.ProjectTableModel;
+import de.dominik_geyer.jtimesched.project.ProjectTime;
 
 
 @SuppressWarnings("serial")
@@ -28,9 +29,15 @@ public class TimeCellRenderer extends JLabel implements TableCellRenderer {
 		switch (modelColumn) {
 		case ProjectTableModel.COLUMN_TIMETODAY:
 			tcc = new TimeCellComponent(prj.getSecondsToday(), prj.getQuotaToday());
+			tcc.setToolTipText(prj.getQuotaToday() > 0 ?
+					String.format("Quota today: %s", ProjectTime.formatSeconds(prj.getQuotaToday())) :
+					null);
 			break;
 		case ProjectTableModel.COLUMN_TIMEOVERALL:
 			tcc = new TimeCellComponent(prj.getSecondsOverall(), prj.getQuotaOverall());
+			tcc.setToolTipText(prj.getQuotaOverall() > 0 ?
+					String.format("Quota overall: %s", ProjectTime.formatSeconds(prj.getQuotaOverall())) :
+					null);
 			break;
 		}
 		

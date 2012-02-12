@@ -14,6 +14,9 @@ public class TimeCellComponent extends JLabel {
 	private static final Color BAR_COLOR_OVERDUE = new Color(200, 50, 50);
 	private static final int BAR_HEIGHT = 2;
 	
+	private static final Color HASQUOTA_COLOR = new Color(50, 50, 200);
+	private static final int HASQUOTA_HEIGHT = 3;
+	
 	private int time;
 	private int quota;
 	
@@ -42,6 +45,9 @@ public class TimeCellComponent extends JLabel {
 			
 			g.setColor(color);
 			g.fillRect(0, 0, width, TimeCellComponent.BAR_HEIGHT);
+			
+			g.setColor(TimeCellComponent.HASQUOTA_COLOR);
+			g.fillRect(0, 0, TimeCellComponent.HASQUOTA_HEIGHT, TimeCellComponent.HASQUOTA_HEIGHT);
 		}
 	}
 }
