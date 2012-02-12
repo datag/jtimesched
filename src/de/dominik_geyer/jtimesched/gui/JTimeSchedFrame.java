@@ -521,7 +521,7 @@ public class JTimeSchedFrame extends JFrame {
 							"<html><big>jTimeSched</big><br/>Version " +
 								JTimeSchedApp.APP_VERSION + "<br/><br/>" +
 								"written by Dominik D. Geyer<br/>" +
-								"&lt;devel@dominik-geyer.de&gt;<br/><br/>" +
+								"&lt;code@dominik-geyer.de&gt;<br/><br/>" +
 								"released under the GPLv3 license</html>",
 							"About jTimeSched",
 							JOptionPane.INFORMATION_MESSAGE,
