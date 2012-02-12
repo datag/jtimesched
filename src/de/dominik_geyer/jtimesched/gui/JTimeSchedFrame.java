@@ -344,7 +344,7 @@ public class JTimeSchedFrame extends JFrame {
 			
 			// escape ampersand-character on windows
 			if (System.getProperty("os.name").startsWith("Windows")) {
-				strTray = strTray.replaceAll("&", "&&");
+				strTray = strTray.replaceAll("&", "&&&");
 			}
 			
 			this.trayIcon.setToolTip(strTray);
