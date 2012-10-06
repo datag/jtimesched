@@ -97,6 +97,7 @@ public class JTimeSchedFrame extends JFrame {
 		JTimeSchedFrame.trayDefaultImage = JTimeSchedFrame.getImage("jtimesched-inactive.png");
 		JTimeSchedFrame.trayRunningImage = JTimeSchedFrame.getImage("jtimesched-active.png");
 		
+		// FIXME: native size
 		this.setIconImage(JTimeSchedFrame.trayDefaultImage);
 		this.setPreferredSize(new Dimension(600, 200));
 		this.setMinimumSize(new Dimension(520, 150));
@@ -337,12 +338,8 @@ public class JTimeSchedFrame extends JFrame {
 			}
 		}		
 		
-		
-		Image currentIcon;
-		if (running)
-			currentIcon = JTimeSchedFrame.trayRunningImage;
-		else
-			currentIcon = JTimeSchedFrame.trayDefaultImage;
+		// current image
+		Image currentIcon = (running) ? JTimeSchedFrame.trayRunningImage : JTimeSchedFrame.trayDefaultImage;
 		
 		
 		// update frame-icon
