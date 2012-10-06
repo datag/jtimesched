@@ -70,5 +70,5 @@ release 1.1
 	- automatically un-check projects on today-time-reset
 	- ampersand-character in project-title not shown in tray-tooltip
 	- more distinguishable icon for inactive mode
-	- removed jTimeSched.exe-launcher and added jTimeSched.bat
+	- added jTimeSched.bat-launcher in case jTimeSched.exe-launcher fails
 

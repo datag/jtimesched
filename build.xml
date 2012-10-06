@@ -26,7 +26,7 @@
 	<target name="zip" depends="jar" description="generate the distribution">
 		<copy todir="${dist}" failonerror="yes">
 			<fileset dir="${basedir}" includes="data/** ChangeLog.txt LICENSE.txt jTimeSched.png"/>
-			<fileset dir="${basedir}/launcher" includes="jTimeSched.sh jTimeSched.bat"/>
+			<fileset dir="${basedir}/launcher" includes="jTimeSched.sh jTimeSched.bat jTimeSched.exe"/>
 		</copy>
 		
 		<chmod perm="a+x" file="${dist}/*.sh"/>
