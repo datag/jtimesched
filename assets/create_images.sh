@@ -23,7 +23,7 @@ for i in $ICO_SIZES; do
 	$CONVERT -background none -density $density $INFILE $out  #+antialias
 	
 	# duplicate PNG and make it darker ("inactive version")
-	$CONVERT -modulate 50,20 $out $OUTDIR/jTimeSched_off_${i}px.png
+	$CONVERT -modulate 80,30 $out $OUTDIR/jTimeSched_off_${i}px.png
 	
 	# add to ICO-filelist
 	files="$files $out"
