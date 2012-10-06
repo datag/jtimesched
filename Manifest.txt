@@ -2,10 +2,9 @@ Manifest-Version: 1.0
 Main-Class: de.dominik_geyer.jtimesched.JTimeSchedApp
 Sealed: true
 
-Name: /de/dominik_geyer/jtimesched/
+Name: de/dominik_geyer/jtimesched/
 Specification-Title: Time tracking application
 Specification-Version: 1.0
 Specification-Vendor: Dominik Geyer
 Implementation-Title: jTimeSched
-Implementation-Version: 1.0
 Implementation-Vendor: Dominik Geyer

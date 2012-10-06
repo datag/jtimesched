@@ -13,7 +13,8 @@ import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
 import de.dominik_geyer.jtimesched.misc.PlainTextFormatter;
 
 public class JTimeSchedApp {
-	static public final String APP_VERSION = "1.1";
+	static public String APP_VERSION;
+	
 	static public final String DATA_PATH = "data/";
 	static public final String IMAGES_PATH = DATA_PATH + "img/";
 	static public final String CONF_PATH = "conf/";
@@ -28,6 +29,9 @@ public class JTimeSchedApp {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		// determine version
+		JTimeSchedApp.APP_VERSION = Package.getPackage("de.dominik_geyer.jtimesched").getImplementationVersion();
+		
 		// FIXME: allow different config-path via command-line argument
 		File dirConf = new File(JTimeSchedApp.CONF_PATH);
 		if (!dirConf.isDirectory())
@@ -67,8 +71,8 @@ public class JTimeSchedApp {
 		// open main frame
 		new JTimeSchedFrame();
 	}
-	
-	
+
+
 	private static boolean lockInstance() {
 		try {
 			final File file = new File(JTimeSchedApp.LOCK_FILE);

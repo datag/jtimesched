@@ -3,7 +3,7 @@
 <project name="jTimeSched" default="zip" basedir=".">
 	<description>jTimeSched build file</description>
 	
-	<property name="version" value="x.x"/>
+	<property name="version" value="dev"/>
 	<property name="src" location="src"/>
 	<property name="build" location="build"/>
 	<property name="dist"  location="dist"/>
@@ -19,7 +19,13 @@
 
 	<target name="jar" depends="compile" description="packs the jar">
 		<mkdir dir="${dist}"/>
-		<jar jarfile="${dist}/jTimeSched.jar" basedir="${build}" manifest="Manifest.txt" compress="yes"/>
+		<jar jarfile="${dist}/jTimeSched.jar" basedir="${build}" manifest="Manifest.txt" compress="yes">
+			<manifest>
+				<section name="de/dominik_geyer/jtimesched/"> 
+					<attribute name="Implementation-Version" value="${version}" />
+				</section>
+			</manifest>
+		</jar>
 		<chmod perm="a+x" file="${dist}/jTimeSched.jar"/>
 	</target>
 
