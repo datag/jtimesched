@@ -134,15 +134,19 @@ public class JTimeSchedFrame extends JFrame {
 			
 			// create a backup of project-file
 			// Note: Path.copyTo() of NIO is only available in >=JDK7
+			FileInputStream fis = null;
+	    	FileOutputStream fos = null;
 			try {
-				FileInputStream fis  = new FileInputStream(file);
-		    	FileOutputStream fos = new FileOutputStream(new File(JTimeSchedApp.PRJ_FILE + ".backup"));
+				fis  = new FileInputStream(file);
+		    	fos = new FileOutputStream(new File(JTimeSchedApp.PRJ_FILE + ".backup"));
 		    	
 		        byte[] buf = new byte[1024];
 		        int i = 0;
 		        while ((i = fis.read(buf)) != -1) {
 		            fos.write(buf, 0, i);
 		        }
+		        fis.close();
+		        fos.close();
 			} catch (Exception e) {
 		    	e.printStackTrace();
 		    	JTimeSchedApp.getLogger().warning("Unable to create backup of project file.");
@@ -658,12 +662,12 @@ public class JTimeSchedFrame extends JFrame {
 			List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
 			sortKeys.add(new RowSorter.SortKey(sortColumn, sortAsc ? SortOrder.ASCENDING : SortOrder.DESCENDING));
 			this.tblSched.getRowSorter().setSortKeys(sortKeys);
-			
-			in.close();
 		} catch(IOException ex) {
 			throw ex;
 		} catch(ClassNotFoundException ex) {
 			throw ex;
+		} finally {
+			in.close();
 		}
 	}
 	
