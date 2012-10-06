@@ -14,7 +14,7 @@
 	</target>
 
 	<target name="compile" depends="init" description="compile the source">
-		<javac srcdir="${src}" destdir="${build}"/>
+		<javac srcdir="${src}" destdir="${build}" includeantruntime="false" />
 	</target>
 
 	<target name="jar" depends="compile" description="packs the jar">
