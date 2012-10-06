@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,8 +71,8 @@ public class JTimeSchedFrame extends JFrame {
 	
 	private TrayIcon trayIcon;
 	private boolean runningState = false;
-	private static final Image trayDefaultImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "jtimesched-inactive.png");
-	private static final Image trayRunningImage = Toolkit.getDefaultToolkit().getImage(JTimeSchedApp.IMAGES_PATH + "jtimesched-active.png");
+	private static Image trayDefaultImage;
+	private static Image trayRunningImage;
 	private MenuItem itemToggleProject;
 	
 	private ProjectTable tblSched;
@@ -92,6 +93,9 @@ public class JTimeSchedFrame extends JFrame {
 	
 	public JTimeSchedFrame() {
 		super("jTimeSched");
+		
+		JTimeSchedFrame.trayDefaultImage = JTimeSchedFrame.getImage("jtimesched-inactive.png");
+		JTimeSchedFrame.trayRunningImage = JTimeSchedFrame.getImage("jtimesched-active.png");
 		
 		this.setIconImage(JTimeSchedFrame.trayDefaultImage);
 		this.setPreferredSize(new Dimension(600, 200));
@@ -175,7 +179,7 @@ public class JTimeSchedFrame extends JFrame {
 		// bottom panel
 		JPanel panelBottom = new JPanel();
 		panelBottom.setLayout(new BoxLayout(panelBottom, BoxLayout.LINE_AXIS));
-		JButton btnAdd = new JButton("Add project", new ImageIcon(JTimeSchedApp.IMAGES_PATH + "project-add.png"));
+		JButton btnAdd = new JButton("Add project", JTimeSchedFrame.getImageIcon("project-add.png"));
 		btnAdd.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -226,7 +230,7 @@ public class JTimeSchedFrame extends JFrame {
 		panelBottom.add(Box.createRigidArea(new Dimension(5, 0)));
 		
 		// log toggle button
-		this.btnLogToggle = new JToggleButton(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "log-toggle.png"));
+		this.btnLogToggle = new JToggleButton(JTimeSchedFrame.getImageIcon("log-toggle.png"));
 		this.btnLogToggle.setToolTipText("toggle log area");
 		this.btnLogToggle.addActionListener(new ActionListener() {
 			@Override
@@ -303,6 +307,17 @@ public class JTimeSchedFrame extends JFrame {
 		this.setVisible(this.initiallyVisible);
 	}
 	
+	public static URL getImageResource(String image) {
+		return JTimeSchedFrame.class.getResource("/" + JTimeSchedApp.IMAGES_PATH + image);
+	}
+	
+	public static Image getImage(String image) {
+		return Toolkit.getDefaultToolkit().getImage(JTimeSchedFrame.getImageResource(image));
+	}
+	
+	public static ImageIcon getImageIcon(String image) {
+		return new ImageIcon(JTimeSchedFrame.getImageResource(image));
+	}
 	
 	protected void updateGUI() {
 		this.updateSchedTable();

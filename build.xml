@@ -16,8 +16,14 @@
 	<target name="compile" depends="init" description="compile the source">
 		<javac srcdir="${src}" destdir="${build}" includeantruntime="false" />
 	</target>
-
-	<target name="jar" depends="compile" description="packs the jar">
+	
+	<target name="copy" depends="compile" description="copy needed files">
+		<copy todir="${build}" failonerror="yes">
+			<fileset dir="${basedir}" includes="data/**"/>
+		</copy>
+	</target>
+	
+	<target name="jar" depends="copy" description="packs the jar">
 		<mkdir dir="${dist}"/>
 		<jar jarfile="${dist}/jTimeSched.jar" basedir="${build}" manifest="Manifest.txt" compress="yes">
 			<manifest>
@@ -31,7 +37,7 @@
 
 	<target name="zip" depends="jar" description="generate the distribution">
 		<copy todir="${dist}" failonerror="yes">
-			<fileset dir="${basedir}" includes="data/** ChangeLog.txt LICENSE.txt jTimeSched.png"/>
+			<fileset dir="${basedir}" includes="ChangeLog.txt LICENSE.txt jTimeSched.png"/>
 			<fileset dir="${basedir}/launcher" includes="jTimeSched.sh jTimeSched.bat jTimeSched.exe"/>
 		</copy>
 		

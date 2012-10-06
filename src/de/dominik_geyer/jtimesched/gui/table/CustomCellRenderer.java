@@ -13,6 +13,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.TableCellRenderer;
 
 import de.dominik_geyer.jtimesched.JTimeSchedApp;
+import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
 import de.dominik_geyer.jtimesched.project.Project;
 import de.dominik_geyer.jtimesched.project.ProjectTableModel;
 import de.dominik_geyer.jtimesched.project.ProjectTime;
@@ -72,7 +73,7 @@ public class CustomCellRenderer extends JLabel implements TableCellRenderer {
 			break;
 		case ProjectTableModel.COLUMN_ACTION_DELETE:
 			this.setToolTipText("remove project");
-			this.setIcon(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "project-delete.png"));
+			this.setIcon(JTimeSchedFrame.getImageIcon("project-delete.png"));
 			this.setHorizontalAlignment(SwingConstants.CENTER);
 			break;
 		case ProjectTableModel.COLUMN_ACTION_STARTPAUSE:
@@ -80,11 +81,11 @@ public class CustomCellRenderer extends JLabel implements TableCellRenderer {
 			//String tooltip;
 			if (prj.isRunning()) {
 				//tooltip = "pause";
-				ii = new ImageIcon(JTimeSchedApp.IMAGES_PATH + "pause.png");
+				ii = JTimeSchedFrame.getImageIcon("pause.png");
 			}
 			else {
 				//tooltip = "start";
-				ii = new ImageIcon(JTimeSchedApp.IMAGES_PATH + "start.png");
+				ii = JTimeSchedFrame.getImageIcon("start.png");
 			}
 			//this.setToolTipText(tooltip);
 			this.setIcon(ii);

@@ -75,7 +75,7 @@ public class ColorDialog extends JDialog implements ActionListener {
 
 		
 		// custom-color chooser button
-		btn = new JButton(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "color-custom.png"));
+		btn = new JButton(JTimeSchedFrame.getImageIcon("color-custom.png"));
 		btn.setToolTipText("choose custom color");
 		btn.setPreferredSize(new Dimension(SIZE, SIZE));
 		btn.setMinimumSize(new Dimension(SIZE, SIZE));
@@ -93,7 +93,7 @@ public class ColorDialog extends JDialog implements ActionListener {
 		
 		
 		// no-color button
-		btn = new JButton(new ImageIcon(JTimeSchedApp.IMAGES_PATH + "color-reset.png"));
+		btn = new JButton(JTimeSchedFrame.getImageIcon("color-reset.png"));
 		btn.setToolTipText("reset color");
 		btn.setPreferredSize(new Dimension(SIZE, SIZE));
 		btn.setMinimumSize(new Dimension(SIZE, SIZE));
