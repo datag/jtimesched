@@ -40,7 +40,7 @@ public class ProjectSerializer {
 	// become unavailable. Also, it's not thread safe.
 	public synchronized void writeXml(List<Project> projects) throws TransformerConfigurationException, SAXException, IOException {
 		OutputStreamWriter out = new OutputStreamWriter(
-				new FileOutputStream(filename), "UTF8");
+				new FileOutputStream(this.filename), "UTF8");
 		StreamResult streamResult = new StreamResult(out);
 		SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
 		

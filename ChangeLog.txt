@@ -69,6 +69,7 @@ release 1.1
 	- indicate present quota by a little blue dot in cell
 	- automatically un-check projects on today-time-reset
 	- ampersand-character in project-title not shown in tray-tooltip
-	- more distinguishable icon for inactive mode
+	- new application icon (different sizes) more distinguishable icon when inactive
+	- moved resource files (graphics) into JAR
 	- added jTimeSched.bat-launcher in case jTimeSched.exe-launcher fails
 
