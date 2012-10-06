@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -68,11 +69,8 @@ import de.dominik_geyer.jtimesched.project.ProjectTime;
 
 @SuppressWarnings("serial")
 public class JTimeSchedFrame extends JFrame {
-	
 	private TrayIcon trayIcon;
 	private boolean runningState = false;
-	private static Image trayDefaultImage;
-	private static Image trayRunningImage;
 	private MenuItem itemToggleProject;
 	
 	private ProjectTable tblSched;
@@ -91,14 +89,12 @@ public class JTimeSchedFrame extends JFrame {
 	
 	private boolean initiallyVisible = true;
 	
+	private static final int[] appIconSizes = {16, 24, 32, 40, 48, 64, 128, 256};
+	
 	public JTimeSchedFrame() {
 		super("jTimeSched");
 		
-		JTimeSchedFrame.trayDefaultImage = JTimeSchedFrame.getImage("jtimesched-inactive.png");
-		JTimeSchedFrame.trayRunningImage = JTimeSchedFrame.getImage("jtimesched-active.png");
-		
-		// FIXME: native size
-		this.setIconImage(JTimeSchedFrame.trayDefaultImage);
+		this.updateIconImage(false);
 		this.setPreferredSize(new Dimension(600, 200));
 		this.setMinimumSize(new Dimension(520, 150));
 		
@@ -308,16 +304,28 @@ public class JTimeSchedFrame extends JFrame {
 		this.setVisible(this.initiallyVisible);
 	}
 	
-	public static URL getImageResource(String image) {
-		return JTimeSchedFrame.class.getResource("/" + JTimeSchedApp.IMAGES_PATH + image);
+	public static URL getImageResource(String filename) {
+		String path = JTimeSchedApp.IMAGES_PATH + filename;
+		URL resFile = JTimeSchedFrame.class.getResource("/" + path);
+		
+		// loading from JAR failed? Try local data directory
+		if (resFile == null) {
+			try {
+				resFile = new URL("file://" + new File(path).getCanonicalPath());
+			} catch (Exception e) {
+				// print stack-trace and ignore error
+				e.printStackTrace();
+			}
+		}
+		return resFile;
 	}
 	
-	public static Image getImage(String image) {
-		return Toolkit.getDefaultToolkit().getImage(JTimeSchedFrame.getImageResource(image));
+	public static Image getImage(String filename) {
+		return Toolkit.getDefaultToolkit().getImage(JTimeSchedFrame.getImageResource(filename));
 	}
 	
-	public static ImageIcon getImageIcon(String image) {
-		return new ImageIcon(JTimeSchedFrame.getImageResource(image));
+	public static ImageIcon getImageIcon(String filename) {
+		return new ImageIcon(JTimeSchedFrame.getImageResource(filename));
 	}
 	
 	protected void updateGUI() {
@@ -325,7 +333,7 @@ public class JTimeSchedFrame extends JFrame {
 		this.updateStatsLabel();
 		this.updateAppIcons();
 	}
-	
+
 	protected void updateAppIcons() {
 		boolean running = false;
 		Project runningProject = null;
@@ -338,13 +346,9 @@ public class JTimeSchedFrame extends JFrame {
 			}
 		}		
 		
-		// current image
-		Image currentIcon = (running) ? JTimeSchedFrame.trayRunningImage : JTimeSchedFrame.trayDefaultImage;
-		
-		
 		// update frame-icon
 		if (this.runningState != running) {
-				this.setIconImage(currentIcon);
+			this.updateIconImage(running);
 		}
 		
 		
@@ -368,13 +372,40 @@ public class JTimeSchedFrame extends JFrame {
 			
 			// only update tray-icon on change
 			if (this.runningState != running) {
-				this.trayIcon.setImage(currentIcon);
+				this.updateTrayIcon(running);
 			}
 		}
 		
 		this.runningState = running;
 	}
 
+	protected void updateIconImage(boolean running)
+	{
+		List<Image> images = new ArrayList<Image>();
+		
+		for (int size: JTimeSchedFrame.appIconSizes) {
+			String filename = String.format("appicon/jTimeSched_%s_%dpx.png", (running ? "on" : "off"), size);
+			images.add(JTimeSchedFrame.getImage(filename));
+		}
+		
+		this.setIconImages(images);
+	}
+	
+	protected void updateTrayIcon(boolean running)
+	{
+		int trayIconSize = this.trayIcon.getSize().width;
+		int useSize = JTimeSchedFrame.appIconSizes[JTimeSchedFrame.appIconSizes.length - 1];
+		
+		for (int size: JTimeSchedFrame.appIconSizes) {
+			if (trayIconSize <= size) {
+				useSize = size;
+				break;
+			}
+		}
+		
+		String filename = String.format("appicon/jTimeSched_%s_%dpx.png", (running ? "on" : "off"), useSize);
+		this.trayIcon.setImage(JTimeSchedFrame.getImage(filename));
+	}
 
 	protected void updateSchedTable() {
 		ProjectTableModel tstm = (ProjectTableModel)tblSched.getModel();
@@ -526,14 +557,14 @@ public class JTimeSchedFrame extends JFrame {
 	}
 	
 	
-	public boolean setupTrayIcon() {
+	protected boolean setupTrayIcon() {
 		if (SystemTray.isSupported()) {
 			SystemTray tray = SystemTray.getSystemTray();
 			
 			ActionListener aboutListener = new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JOptionPane.showMessageDialog(null,
+					JOptionPane.showMessageDialog(JTimeSchedFrame.this,
 							"<html><big>jTimeSched</big><br/>Version " +
 								JTimeSchedApp.APP_VERSION + "<br/><br/>" +
 								"written by Dominik D. Geyer<br/>" +
@@ -541,7 +572,7 @@ public class JTimeSchedFrame extends JFrame {
 								"released under the GPLv3 license</html>",
 							"About jTimeSched",
 							JOptionPane.INFORMATION_MESSAGE,
-							new ImageIcon(JTimeSchedFrame.trayRunningImage));
+							JTimeSchedFrame.getImageIcon("appicon/jTimeSched_on_64px.png"));
 				}
 			};
 
@@ -600,7 +631,7 @@ public class JTimeSchedFrame extends JFrame {
 			popup.add(itemExit);
 
 
-			trayIcon = new TrayIcon(JTimeSchedFrame.trayDefaultImage, "jTimeSched", popup);
+			trayIcon = new TrayIcon(JTimeSchedFrame.getImage("appicon/jTimeSched_off_16px.png"), "jTimeSched", popup);
 
 			ActionListener actionListener = new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -625,6 +656,8 @@ public class JTimeSchedFrame extends JFrame {
 
 			try {
 				tray.add(trayIcon);
+				
+				this.updateTrayIcon(false);
 			} catch (AWTException e) {
 				System.err.println("TrayIcon could not be added.");
 				return false;
