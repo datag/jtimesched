@@ -581,7 +581,7 @@ public class JTimeSchedFrame extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					JOptionPane.showMessageDialog(JTimeSchedFrame.this,
 							"<html><big>jTimeSched</big><br/>Version " +
-								JTimeSchedApp.APP_VERSION + "<br/><br/>" +
+								JTimeSchedApp.getAppVersion() + "<br/><br/>" +
 								"written by Dominik D. Geyer<br/>" +
 								"&lt;code@dominik-geyer.de&gt;<br/><br/>" +
 								"released under the GPLv3 license</html>",
@@ -704,7 +704,7 @@ public class JTimeSchedFrame extends JFrame {
 			fis = new FileInputStream(JTimeSchedApp.SETTINGS_FILE);
 			in = new ObjectInputStream(fis);
 			
-			/*String appVersion =*/ in.readUTF();	// app-version
+			/*String appVersion =*/ in.readUTF();	// app-version; ignored by now
 			
 			Dimension size = (Dimension) in.readObject();
 			this.setSize(size);
@@ -739,7 +739,7 @@ public class JTimeSchedFrame extends JFrame {
 			fos = new FileOutputStream(JTimeSchedApp.SETTINGS_FILE);
 			out = new ObjectOutputStream(fos);
 			
-			out.writeUTF(JTimeSchedApp.APP_VERSION);
+			out.writeUTF(JTimeSchedApp.getAppVersion());
 			out.writeObject(this.getSize());
 			out.writeObject(this.getLocation());
 			out.writeBoolean(this.isVisible());

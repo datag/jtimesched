@@ -34,8 +34,6 @@ import de.dominik_geyer.jtimesched.misc.PlainTextFormatter;
  * Main class of the application.
  */
 public class JTimeSchedApp {
-	static public String APP_VERSION;
-	
 	static public final String DATA_PATH = "data/";
 	static public final String IMAGES_PATH = DATA_PATH + "img/";
 	static public final String CONF_PATH = "conf/";
@@ -52,9 +50,6 @@ public class JTimeSchedApp {
 	 * @param args Command line arguments
 	 */
 	public static void main(String[] args) {
-		// determine version
-		JTimeSchedApp.APP_VERSION = Package.getPackage("de.dominik_geyer.jtimesched").getImplementationVersion();
-		
 		// FIXME: allow different config-path via command-line argument
 		File dirConf = new File(JTimeSchedApp.CONF_PATH);
 		if (!dirConf.isDirectory())
@@ -64,13 +59,13 @@ public class JTimeSchedApp {
 		if (!JTimeSchedApp.lockInstance()) {
 			JOptionPane.showMessageDialog(null,
 					"It seems that there is already a running instance of jTimeSched " +
-					"using the project-file in use.\n\n" +
+					"using the projects-file in use.\n\n" +
 					"Possible solutions:\n" +
 					"1) Most likely you want to use the running instance residing in the system-tray.\n" +
 					"2) Run another instance from within a different directory.\n" +
 					"3) Delete the lock-file '" + JTimeSchedApp.LOCK_FILE + "' manually if it is a leftover caused by an unclean shutdown.\n\n" +
 					"jTimeSched will exit now.",
-					"Another running instance detected",
+					"Another running instance for projects-file detected",
 					JOptionPane.WARNING_MESSAGE);
 			
 			System.exit(1);
@@ -95,6 +90,16 @@ public class JTimeSchedApp {
 		new JTimeSchedFrame();
 	}
 
+	/**
+	 * Determines and returns the application's version, which is set in the Manifest file in attribute "ImplementationVersion".
+	 * 
+	 * @return String The application's version; if not set, it returns "unknown"
+	 */
+	public static String getAppVersion()
+	{
+		String appVersion = Package.getPackage("de.dominik_geyer.jtimesched").getImplementationVersion();
+		return (appVersion == null) ? "unknown" : appVersion;
+	}
 
 	private static boolean lockInstance() {
 		try {

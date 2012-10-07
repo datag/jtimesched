@@ -74,7 +74,7 @@ public class ProjectSerializer {
 		hd.startDocument();
 		AttributesImpl atts = new AttributesImpl();
 		
-		addXmlAttribute(atts, "version", JTimeSchedApp.APP_VERSION);
+		addXmlAttribute(atts, "version", JTimeSchedApp.getAppVersion());
 		startXmlElement(hd, "projects", atts);
 
 		for (Project p: projects)
