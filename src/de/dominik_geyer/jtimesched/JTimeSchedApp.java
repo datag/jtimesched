@@ -93,12 +93,12 @@ public class JTimeSchedApp {
 	/**
 	 * Determines and returns the application's version, which is set in the Manifest file in attribute "ImplementationVersion".
 	 * 
-	 * @return String The application's version; if not set, it returns "unknown"
+	 * @return String The application's version; if not set in Manifest or not available it returns the string "unknown"
 	 */
 	public static String getAppVersion()
 	{
 		String appVersion = Package.getPackage("de.dominik_geyer.jtimesched").getImplementationVersion();
-		return (appVersion == null) ? "unknown" : appVersion;
+		return (appVersion != null) ? appVersion : "unknown";
 	}
 
 	private static boolean lockInstance() {
