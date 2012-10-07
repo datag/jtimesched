@@ -1,3 +1,21 @@
+/* jTimeSched - A simple and lightweight time tracking tool
+ * Copyright (C) 2010-2012 Dominik D. Geyer <dominik.geyer@gmail.com>
+ * See LICENSE.txt for details.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.dominik_geyer.jtimesched;
 
 import java.io.File;
@@ -12,6 +30,9 @@ import javax.swing.JOptionPane;
 import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
 import de.dominik_geyer.jtimesched.misc.PlainTextFormatter;
 
+/**
+ * Main class of the application.
+ */
 public class JTimeSchedApp {
 	static public String APP_VERSION;
 	
@@ -26,7 +47,9 @@ public class JTimeSchedApp {
 	static private Logger LOGGER;
 	
 	/**
-	 * @param args
+	 * Application's entry point.
+	 * 
+	 * @param args Command line arguments
 	 */
 	public static void main(String[] args) {
 		// determine version

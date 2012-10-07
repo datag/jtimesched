@@ -1,3 +1,21 @@
+/* jTimeSched - A simple and lightweight time tracking tool
+ * Copyright (C) 2010-2012 Dominik D. Geyer <dominik.geyer@gmail.com>
+ * See LICENSE.txt for details.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.dominik_geyer.jtimesched.gui;
 
 import java.awt.AWTException;
@@ -26,7 +44,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,7 +52,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
-
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -56,7 +72,6 @@ import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.RowSorter.SortKey;
-
 
 import de.dominik_geyer.jtimesched.JTimeSchedApp;
 import de.dominik_geyer.jtimesched.gui.table.ProjectTable;
