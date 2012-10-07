@@ -40,6 +40,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -125,49 +126,38 @@ public class JTimeSchedFrame extends JFrame {
 		JTimeSchedApp.getLogger().addHandler(new JTimeSchedGUILogHandler(this.tfLog));
 		
 		
-		// load project-file
-		File file = new File(JTimeSchedApp.PRJ_FILE);
-		if (file.isFile()) {
-			try {
-				ProjectSerializer ps = new ProjectSerializer(JTimeSchedApp.PRJ_FILE);
-				this.arPrj = ps.readXml();
-				
-				// check all projects for a today-time reset
-				checkResetToday();
-			} catch (Exception e) {
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this,
-						"An error occurred while loading the project data:\n" +
-						e.getMessage() + "\n\n" +
-						"Please correct or remove the file '" + JTimeSchedApp.PRJ_FILE + "'. " +
-						"JTimeSched will quit now to avoid data corruption.",
-						"Error loading project data",
-						JOptionPane.ERROR_MESSAGE);
-				
-				System.exit(1);
-			}
-			
-			
-			// create a backup of project-file
-			// Note: Path.copyTo() of NIO is only available in >=JDK7
-			FileInputStream fis = null;
-	    	FileOutputStream fos = null;
-			try {
-				fis  = new FileInputStream(file);
-		    	fos = new FileOutputStream(new File(JTimeSchedApp.PRJ_FILE + ".backup"));
-		    	
-		        byte[] buf = new byte[1024];
-		        int i = 0;
-		        while ((i = fis.read(buf)) != -1) {
-		            fos.write(buf, 0, i);
-		        }
-		        fis.close();
-		        fos.close();
-			} catch (Exception e) {
-		    	e.printStackTrace();
-		    	JTimeSchedApp.getLogger().warning("Unable to create backup of project file.");
-		    }
+		// backup project-file
+		try {
+			this.backupProjects();
+		} catch (FileNotFoundException e) {
+			// ignore this exception: no project file -> no backup
+		} catch (Exception e) {
+			e.printStackTrace();
+	    	JTimeSchedApp.getLogger().warning("Unable to create backup of project file: " + e.getMessage());
 		}
+		
+		// load project-file
+		try {
+			this.loadProjects();
+		} catch (FileNotFoundException e) {
+			JTimeSchedApp.getLogger().info("Projects file does not exist, starting with empty projects file.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			JTimeSchedApp.getLogger().severe("Error loading projects file: " + e.getMessage());
+			
+			JOptionPane.showMessageDialog(this,
+					"An error occurred while loading the projects file:\n" +
+					e.getMessage() + "\n\n" +
+					"Please correct or remove the file '" + JTimeSchedApp.PRJ_FILE + "'. " +
+					"JTimeSched will quit now to avoid data corruption.",
+					"Error loading projects file",
+					JOptionPane.ERROR_MESSAGE);
+			
+			System.exit(1);
+		}
+		
+		// check all projects for a today-time reset
+		checkResetToday();
 		
 		
 		// create model an associate data
@@ -274,13 +264,13 @@ public class JTimeSchedFrame extends JFrame {
 		
 		
 		// load settings
-		file = new File(JTimeSchedApp.SETTINGS_FILE);
-		if (file.isFile()) {
-			try {
-				this.loadSettings();
-			} catch (Exception e) {
-				JTimeSchedApp.getLogger().warning("Error loading settings, running with defaults.");
-			}
+		try {
+			this.loadSettings();
+		} catch (FileNotFoundException fnfe) {
+			JTimeSchedApp.getLogger().info("Settings file does not exist, running with defaults.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			JTimeSchedApp.getLogger().warning("Error loading settings, running with defaults: " + e.getMessage());
 		}
 		
 		
@@ -687,7 +677,12 @@ public class JTimeSchedFrame extends JFrame {
 
 	}
 	
-	public void saveProjects() {
+	protected void loadProjects() throws FileNotFoundException, Exception {
+		ProjectSerializer ps = new ProjectSerializer(JTimeSchedApp.PRJ_FILE);
+		this.arPrj = ps.readXml();
+	}
+	
+	protected void saveProjects() {
 		try {
 			ProjectSerializer ps = new ProjectSerializer(JTimeSchedApp.PRJ_FILE);
 			ps.writeXml(JTimeSchedFrame.this.arPrj);
@@ -697,7 +692,34 @@ public class JTimeSchedFrame extends JFrame {
 		}
 	}
 	
-	public void loadSettings() throws Exception {
+	/**
+	 * Creates a backup of the current projects file.
+	 * 
+	 * NOTE: There is a more convenient way to do this: Path.copyTo(). However,
+	 *      Path.copyTo() of NIO is only available in >=J2SE7
+	 * 
+	 * @throws FileNotFoundException
+	 * @throws Exception
+	 */
+	protected void backupProjects() throws FileNotFoundException, Exception {
+		File file = new File(JTimeSchedApp.PRJ_FILE);
+
+		FileInputStream fis = null;
+    	FileOutputStream fos = null;
+
+		fis  = new FileInputStream(file);
+    	fos = new FileOutputStream(new File(JTimeSchedApp.PRJ_FILE + ".backup"));
+    	
+        byte[] buf = new byte[1024];
+        int i = 0;
+        while ((i = fis.read(buf)) != -1) {
+            fos.write(buf, 0, i);
+        }
+        fis.close();
+        fos.close();
+	}
+	
+	protected void loadSettings() throws FileNotFoundException, Exception {
 		FileInputStream fis = null;
 		ObjectInputStream in = null;
 		try {
@@ -722,17 +744,17 @@ public class JTimeSchedFrame extends JFrame {
 			List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
 			sortKeys.add(new RowSorter.SortKey(sortColumn, sortAsc ? SortOrder.ASCENDING : SortOrder.DESCENDING));
 			this.tblSched.getRowSorter().setSortKeys(sortKeys);
-		} catch(IOException ex) {
-			throw ex;
-		} catch(ClassNotFoundException ex) {
+		} catch(Exception ex) {
 			throw ex;
 		} finally {
-			in.close();
+			if (in != null) {
+				in.close();
+			}
 		}
 	}
 	
 	
-	public void saveSettings() throws Exception {
+	protected void saveSettings() throws Exception {
 		FileOutputStream fos = null;
 		ObjectOutputStream out = null;
 		try	{
