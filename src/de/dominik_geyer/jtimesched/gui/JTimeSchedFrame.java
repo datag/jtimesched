@@ -646,7 +646,7 @@ public class JTimeSchedFrame extends JFrame {
 					//		                TrayIcon.MessageType.INFO);
 					
 					
-					// FIXME: bring to front if not foreground-window
+					// FIXME: bring to front if not foreground-window [#5]
 					// isActive() doesn't work on MS-Windows because click
 					// into tray steels the focus.
 					if (!isVisible() /*|| !isActive()*/)

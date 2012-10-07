@@ -51,7 +51,7 @@ public class JTimeSchedApp {
 	 * @param args Command line arguments
 	 */
 	public static void main(String[] args) {
-		// FIXME: allow different config-path via command-line argument
+		// FIXME: allow custom configuration path via command-line argument [#22]
 		File dirConf = new File(JTimeSchedApp.CONF_PATH);
 		if (!dirConf.isDirectory())
 			dirConf.mkdir();
