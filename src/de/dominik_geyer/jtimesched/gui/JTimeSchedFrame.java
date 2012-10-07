@@ -146,9 +146,10 @@ public class JTimeSchedFrame extends JFrame {
 			JTimeSchedApp.getLogger().severe("Error loading projects file: " + e.getMessage());
 			
 			JOptionPane.showMessageDialog(this,
-					"An error occurred while loading the projects file:\n" +
-					e.getMessage() + "\n\n" +
-					"Please correct or remove the file '" + JTimeSchedApp.PRJ_FILE + "'. " +
+					"An error occurred while loading the projects file.\n" +
+					"Details: \"" + e.getMessage() + "\"\n\n" +
+					"Please correct or remove the file '" + JTimeSchedApp.PRJ_FILE + "' " +
+					"(or replace it with the backup file '" + JTimeSchedApp.PRJ_FILE_BACKUP + "', if present).\n\n" +
 					"JTimeSched will quit now to avoid data corruption.",
 					"Error loading projects file",
 					JOptionPane.ERROR_MESSAGE);
@@ -708,7 +709,7 @@ public class JTimeSchedFrame extends JFrame {
     	FileOutputStream fos = null;
 
 		fis  = new FileInputStream(file);
-    	fos = new FileOutputStream(new File(JTimeSchedApp.PRJ_FILE + ".backup"));
+    	fos = new FileOutputStream(new File(JTimeSchedApp.PRJ_FILE_BACKUP));
     	
         byte[] buf = new byte[1024];
         int i = 0;

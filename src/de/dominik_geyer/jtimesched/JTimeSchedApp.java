@@ -38,6 +38,7 @@ public class JTimeSchedApp {
 	static public final String IMAGES_PATH = DATA_PATH + "img/";
 	static public final String CONF_PATH = "conf/";
 	static public final String PRJ_FILE = CONF_PATH + "jTimeSched.projects";
+	static public final String PRJ_FILE_BACKUP = JTimeSchedApp.PRJ_FILE + ".backup";
 	static public final String SETTINGS_FILE = CONF_PATH + "jTimeSched.settings";
 	static public final String LOCK_FILE = CONF_PATH + "jTimeSched.lock";
 	static public final String LOG_FILE = CONF_PATH + "jTimeSched.log";
