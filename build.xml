@@ -20,7 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <!--
-Build release with "ant -Dversion=x.x"
+Example release of version 1.0 targeting Java 1.6
+	ant -Dversion=1.0 -Dant.build.javac.target=1.6 -Dant.build.javac.source=1.6
 -->
 
 <project name="jTimeSched" default="zip" basedir=".">
