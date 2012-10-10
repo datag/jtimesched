@@ -27,14 +27,14 @@ Example release of version 1.0 targeting Java 1.6
 <project name="jTimeSched" default="zip" basedir=".">
 	<description>jTimeSched build file</description>
 	
-	<property name="version" value="dev"/>
-	<property name="src" location="src"/>
-	<property name="build" location="build"/>
-	<property name="dist"  location="dist"/>
+	<property name="version" value="dev" />
+	<property name="src" location="src" />
+	<property name="build" location="build" />
+	<property name="dist"  location="dist" />
 
 	<target name="init">
 		<tstamp/>
-		<mkdir dir="${build}"/>
+		<mkdir dir="${build}" />
 	</target>
 
 	<target name="compile" depends="init" description="compile the source">
@@ -43,12 +43,12 @@ Example release of version 1.0 targeting Java 1.6
 	
 	<target name="data" depends="compile" description="copy resource files (integrated in JAR)">
 		<copy todir="${build}" failonerror="yes">
-			<fileset dir="${basedir}" includes="data/**"/>
+			<fileset dir="${basedir}" includes="data/**" />
 		</copy>
 	</target>
 	
 	<target name="jar" depends="data" description="packs the jar">
-		<mkdir dir="${dist}"/>
+		<mkdir dir="${dist}" />
 		<jar jarfile="${dist}/jTimeSched.jar" basedir="${build}" manifest="Manifest.txt" compress="yes">
 			<manifest>
 				<section name="de/dominik_geyer/jtimesched/"> 
@@ -56,32 +56,33 @@ Example release of version 1.0 targeting Java 1.6
 				</section>
 			</manifest>
 		</jar>
-		<chmod perm="a+x" file="${dist}/jTimeSched.jar"/>
+		<chmod perm="a+x" file="${dist}/jTimeSched.jar" />
 	</target>
 
 	<target name="zip" depends="jar" description="generate the distribution">
 		<copy todir="${dist}" failonerror="yes">
-			<fileset dir="${basedir}" includes="ChangeLog.txt LICENSE.txt"/>
-			<fileset dir="${basedir}/launcher" includes="jTimeSched.sh jTimeSched.exe"/>
+			<fileset dir="${basedir}" includes="ChangeLog.txt LICENSE.txt" />
+			<fileset dir="${basedir}/launcher" includes="jTimeSched.sh jTimeSched.exe" />
 		</copy>
 		
 		<copy todir="${dist}/appicon" failonerror="yes">
-			<fileset dir="${basedir}/data/img/appicon" includes="jTimeSched_on_*.png"/>
+			<fileset dir="${basedir}/data/img/appicon" includes="jTimeSched_on_*.png" />
 			<fileset dir="${basedir}/launcher" includes="jTimeSched.ico" />
 		</copy>
 		
-		<chmod perm="a+x" file="${dist}/*.sh"/>
+		<chmod perm="a+x" file="${dist}/jTimeSched.sh" />
+		<chmod perm="a+x" file="${dist}/jTimeSched.jar" />
 
 		<exec executable="zip" dir="${dist}" failonerror="yes" description="zipping">
-			<arg value="-q9R"/>
-			<arg value="jTimeSched-${version}.zip"/>
-			<arg value="*"/>
-			<arg value="-x *.svn "/>
+			<arg value="-q9R" />
+			<arg value="jTimeSched-${version}.zip" />
+			<arg value="*" />
+			<arg value="-x *.svn" />
 		</exec>
 	</target>
 
 	<target name="clean" description="clean up">
-		<delete dir="${build}"/>
-		<delete dir="${dist}"/>
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
 	</target>
 </project>
