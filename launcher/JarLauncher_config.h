@@ -1,3 +1,4 @@
+/* jTimeSched config file for use with JarLauncher */
 
 #define JAVA_BINARY		"javaw.exe"
 #define JAVA_URL		"http://www.java.com/download/"
