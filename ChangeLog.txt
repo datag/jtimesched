@@ -71,6 +71,6 @@ release 1.1
 	- ampersand-character in project-title not shown in tray-tooltip (Windows)
 	- new application icon (different sizes) and more distinguishable icon when inactive
 	- moved resource files (graphics) into JAR
-	- fixed jTimeSched.exe-launcher for 64-bit systems using 32-java
+	- fixed jTimeSched.exe-launcher for 64-bit systems
 	- better error messages when projects/settings fail to load
 
