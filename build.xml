@@ -61,7 +61,7 @@ Example release of version 1.0 targeting Java 1.6
 
 	<target name="zip" depends="jar" description="generate the distribution">
 		<copy todir="${dist}" failonerror="yes">
-			<fileset dir="${basedir}" includes="ChangeLog.txt LICENSE.txt" />
+			<fileset dir="${basedir}" includes="README.md ChangeLog.txt LICENSE.txt" />
 			<fileset dir="${basedir}/launcher" includes="jTimeSched.sh jTimeSched.exe" />
 		</copy>
 		
