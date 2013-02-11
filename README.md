@@ -52,7 +52,7 @@ Copy assets to the build directory. You can run jTimeSched using `java -cp $[bui
 * `jar`  
 Pack all class files and assets into one single JAR-file, which will be stored at `${dist}/jTimeSched.jar`. Run it with `java -jar ${dist}/jTimeSched.jar`
 * `zip`  
-Create a release packages with all platform launchers. The archive will be stored in `${dist}/jTimeSched-${version}.zip`
+Create a release packages (including platform specific launchers). The archive will be stored in `${dist}/jTimeSched-${version}.zip`
 * `clean`  
 Clean-up everything
 
