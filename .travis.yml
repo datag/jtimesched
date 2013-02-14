@@ -1,0 +1,13 @@
+language: java
+
+jdk:
+    - openjdk7
+    - oraclejdk7
+    - openjdk6
+
+script: ant -Dversion="travis-build" zip
+install: true
+
+after_script:
+	- jar -tvf dist/jTimeSched.jar
+
