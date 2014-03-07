@@ -30,6 +30,7 @@ import javax.swing.JOptionPane;
 import de.dominik_geyer.jtimesched.gui.JTimeSchedFrame;
 import de.dominik_geyer.jtimesched.misc.PlainTextFormatter;
 
+
 /**
  * Main class of the application.
  */
@@ -43,7 +44,11 @@ public class JTimeSchedApp {
 	static public final String LOCK_FILE = CONF_PATH + "jTimeSched.lock";
 	static public final String LOG_FILE = CONF_PATH + "jTimeSched.log";
 	
+	/**
+	 * Static logger instance
+	 */
 	static private Logger logger = Logger.getLogger("JTimeSched");
+	
 	
 	/**
 	 * Application's entry point.
@@ -51,45 +56,20 @@ public class JTimeSchedApp {
 	 * @param args Command line arguments
 	 */
 	public static void main(String[] args) {
-		// FIXME: allow custom configuration path via command-line argument [#22]
-		File dirConf = new File(JTimeSchedApp.CONF_PATH);
-		if (!dirConf.isDirectory())
-			dirConf.mkdir();
+		// prepare environment
+		JTimeSchedApp.setupConfigurationDirectory();
 		
-		// request lock
-		if (!JTimeSchedApp.lockInstance()) {
-			JOptionPane.showMessageDialog(null,
-					"It seems that there is already a running instance of jTimeSched " +
-					"using the projects-file in use.\n\n" +
-					"Possible solutions:\n" +
-					"1) Most likely you want to use the running instance residing in the system-tray.\n" +
-					"2) Run another instance from within a different directory.\n" +
-					"3) Delete the lock-file '" + JTimeSchedApp.LOCK_FILE + "' manually if it is a leftover caused by an unclean shutdown.\n\n" +
-					"jTimeSched will exit now.",
-					"Another running instance for projects-file detected",
-					JOptionPane.WARNING_MESSAGE);
-			
-			System.exit(1);
-		}
-		
+		// check application instance
+		JTimeSchedApp.handleInstanceLock();
 		
 		// configure logger
-		JTimeSchedApp.getLogger().setLevel(Level.ALL);
-		
-		try {
-			FileHandler fh = new FileHandler(JTimeSchedApp.LOG_FILE, true);
-			fh.setFormatter(new PlainTextFormatter());
-			JTimeSchedApp.getLogger().addHandler(fh);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Enable to initialize logger for file " + JTimeSchedApp.LOG_FILE);
-		}
-		
+		JTimeSchedApp.configureLogger();
 		
 		// open main frame
 		new JTimeSchedFrame();
 	}
 
+	
 	/**
 	 * Determines and returns the application's version, which is set in the Manifest file in attribute "ImplementationVersion".
 	 * 
@@ -101,12 +81,68 @@ public class JTimeSchedApp {
 		return (appVersion != null) ? appVersion : "unknown";
 	}
 
+	
+	/**
+	 * Sets up the configuration directory.
+	 * 
+	 * If the setup fails, an error message is shown and the application
+	 * exits with a non-zero status code.
+	 */
+	private static void setupConfigurationDirectory() {
+		// TODO: allow custom configuration path via command-line argument
+		File dirConf = new File(JTimeSchedApp.CONF_PATH);
+		if (!dirConf.isDirectory()) {
+			if (!dirConf.mkdir()) {
+				JOptionPane.showMessageDialog(null,
+						"The configuration directory '" + dirConf.getAbsolutePath() + "' could not be created.\n\n" +
+						"Please verify that the path is writable by the user executing jTimeSched.",
+						"Configuration directory cannot be created",
+						JOptionPane.ERROR_MESSAGE);
+				
+				System.exit(1);
+			}
+		}
+	}
+	
+	
+	/**
+	 * Tests for already running instance which uses the same configuration.
+	 * 
+	 * Try to request an instance lock. If this fails, display a dialog with an
+	 * error message and exit with non-zero status code.
+	 */
+	private static void handleInstanceLock() {
+		// request lock
+		if (!JTimeSchedApp.lockInstance()) {
+			JOptionPane.showMessageDialog(null,
+					"It seems that there is already a running instance of jTimeSched " +
+					"using the projects-file in use.\n\n" +
+					"Possible solutions:\n" +
+					"1) Most likely you want to use the running instance residing in the system-tray.\n" +
+					"2) Run another instance from within a different directory.\n" +
+					"3) Delete the lock-file '" + JTimeSchedApp.LOCK_FILE + "' manually if it is a leftover caused by an unclean shutdown.\n\n" +
+					"jTimeSched will exit now.",
+					"Another running instance for projects-file detected",
+					JOptionPane.ERROR_MESSAGE);
+			
+			System.exit(1);
+		}
+	}
+	
+	
+	/**
+	 * Tries to acquire an application instance lock and returns its result.
+	 * 
+	 * @return boolean True if lock could be acquired, false if locked.
+	 */
 	private static boolean lockInstance() {
 		try {
 			final File file = new File(JTimeSchedApp.LOCK_FILE);
 			final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
 			final FileLock fileLock = randomAccessFile.getChannel().tryLock();
+			
 			if (fileLock != null) {
+				// remove lock file via shutdown hook
 				Runtime.getRuntime().addShutdownHook(new Thread() {
 					public void run() {
 						try {
@@ -114,19 +150,43 @@ public class JTimeSchedApp {
 							randomAccessFile.close();
 							file.delete();
 						} catch (Exception e) {
-							System.err.println("Unable to remove lock file: " + JTimeSchedApp.LOCK_FILE + " " + e.getMessage());
+							System.err.println("Error: Unable to remove lock file " + JTimeSchedApp.LOCK_FILE + ": " + e.getMessage());
 						}
 					}
 				});
-				return true;
 			}
 		} catch (Exception e) {
-			System.err.println("Unable to create and/or lock file: " + JTimeSchedApp.LOCK_FILE + " " + e.getMessage());
+			System.err.println("Error: Unable to create and/or lock file " + JTimeSchedApp.LOCK_FILE + ": " + e.getMessage());
+			return false;
 		}
-		return false;
+		return true;
 	}
 
+	
+	/**
+	 * Sets up the application logger.
+	 * 
+	 * Log messages are written to standard error and to a log file.
+	 */
+	private static void configureLogger() {
+		JTimeSchedApp.getLogger().setLevel(Level.ALL);
+		
+		try {
+			FileHandler fh = new FileHandler(JTimeSchedApp.LOG_FILE, true);
+			fh.setFormatter(new PlainTextFormatter());
+			
+			JTimeSchedApp.getLogger().addHandler(fh);
+		} catch (Exception e) {
+			System.err.println("Error: Unable to initialize logger for file " + JTimeSchedApp.LOG_FILE + ": " + e.getMessage());
+		}
+	}
 
+	
+	/**
+	 * Returns the application logger instance.
+	 * 
+	 * @return Logger The application logger instance
+	 */
 	public static Logger getLogger() {
 		return logger;
 	}
