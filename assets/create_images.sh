@@ -1,6 +1,6 @@
 #!/bin/bash
 # This file is part of jTimeSched.
-# Copyright (C) 2010-2012 Dominik D. Geyer <dominik.geyer@gmail.com>
+# Copyright (C) 2010-2014 Dominik D. Geyer <dominik.geyer@gmail.com>
 # See LICENSE.txt for details.
 
 INFILE=jTimeSched.svg

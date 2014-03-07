@@ -1,5 +1,5 @@
 /* jTimeSched - A simple and lightweight time tracking tool
- * Copyright (C) 2010-2012 Dominik D. Geyer <dominik.geyer@gmail.com>
+ * Copyright (C) 2010-2014 Dominik D. Geyer <dominik.geyer@gmail.com>
  * See LICENSE.txt for details.
  * 
  * This program is free software: you can redistribute it and/or modify
