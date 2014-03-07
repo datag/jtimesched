@@ -43,7 +43,7 @@ public class JTimeSchedApp {
 	static public final String LOCK_FILE = CONF_PATH + "jTimeSched.lock";
 	static public final String LOG_FILE = CONF_PATH + "jTimeSched.log";
 	
-	static private Logger LOGGER;
+	static private Logger logger = Logger.getLogger("JTimeSched");
 	
 	/**
 	 * Application's entry point.
@@ -73,17 +73,16 @@ public class JTimeSchedApp {
 		}
 		
 		
-		// initialize logger
-		JTimeSchedApp.LOGGER = Logger.getLogger("JTimeSched");
-		JTimeSchedApp.LOGGER.setLevel(Level.ALL);
+		// configure logger
+		JTimeSchedApp.getLogger().setLevel(Level.ALL);
 		
 		try {
 			FileHandler fh = new FileHandler(JTimeSchedApp.LOG_FILE, true);
 			fh.setFormatter(new PlainTextFormatter());
-			JTimeSchedApp.LOGGER.addHandler(fh);
+			JTimeSchedApp.getLogger().addHandler(fh);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("Enable to initialize logger for file "+JTimeSchedApp.LOG_FILE);
+			System.err.println("Enable to initialize logger for file " + JTimeSchedApp.LOG_FILE);
 		}
 		
 		
@@ -129,6 +128,6 @@ public class JTimeSchedApp {
 
 
 	public static Logger getLogger() {
-		return LOGGER;
+		return logger;
 	}
 }
