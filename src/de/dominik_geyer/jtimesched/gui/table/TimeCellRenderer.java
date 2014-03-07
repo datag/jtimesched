@@ -18,6 +18,7 @@
 
 package de.dominik_geyer.jtimesched.gui.table;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 
@@ -32,6 +33,7 @@ import de.dominik_geyer.jtimesched.project.ProjectTime;
 
 @SuppressWarnings("serial")
 public class TimeCellRenderer extends JLabel implements TableCellRenderer {
+	public static final Color COLOR_HASTIME = Color.BLUE;
 	
 	@Override
 	public Component getTableCellRendererComponent(JTable table,
@@ -50,7 +52,14 @@ public class TimeCellRenderer extends JLabel implements TableCellRenderer {
 			tcc.setToolTipText(prj.getQuotaToday() > 0 ?
 					String.format("Quota today: %s", ProjectTime.formatSeconds(prj.getQuotaToday())) :
 					null);
+			
+			if (prj.getSecondsToday() > 0) {
+				tcc.setForeground(TimeCellRenderer.COLOR_HASTIME);
+			} else {
+				tcc.setForeground(table.getForeground());
+			}
 			break;
+			
 		case ProjectTableModel.COLUMN_TIMEOVERALL:
 			tcc = new TimeCellComponent(prj.getSecondsOverall(), prj.getQuotaOverall());
 			tcc.setToolTipText(prj.getQuotaOverall() > 0 ?
