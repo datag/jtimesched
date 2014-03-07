@@ -40,7 +40,7 @@ You can override the defaults providing the `-D` option to *ant*, e.g. `$ ant -D
 
 Example: Build release package with version string "my-1.5"
 
-    $ ant -Dversion=1.0
+    $ ant -Dversion=my-1.5
 
 
 ### Build targets (`build.xml`)
