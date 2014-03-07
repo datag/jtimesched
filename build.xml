@@ -77,7 +77,6 @@ Example release of version 1.0 targeting Java 1.6
 			<arg value="-q9R" />
 			<arg value="jTimeSched-${version}.zip" />
 			<arg value="*" />
-			<arg value="-x *.svn" />
 		</exec>
 	</target>
 
