@@ -28,7 +28,6 @@ import java.awt.MenuItem;
 import java.awt.Point;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
-import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -313,19 +312,20 @@ public class JTimeSchedFrame extends JFrame {
 	
 	public static Image getImageResource(String filename) {
 		String path = JTimeSchedApp.IMAGES_PATH + filename;
-		URL resFile = JTimeSchedFrame.class.getResource("/" + path);
 		Image image = null;
 		
-		// resource from JAR failed? Try local data directory
-		if (resFile == null) {
-			try {
+		try {
+			if (JTimeSchedFrame.class.getResource("/" + path) != null) {
+				// get image from resource
+				image = ImageIO.read(JTimeSchedFrame.class.getResourceAsStream("/" + path));
+			} else {
+				// fallback: get image from directory
 				image = ImageIO.read(new File(path));
-			} catch (IOException e) {
-				JTimeSchedApp.getLogger().severe("Cannot load image " + filename);
 			}
-		} else {
-			image = Toolkit.getDefaultToolkit().getImage(resFile);
+		} catch (IOException e) {
+			JTimeSchedApp.getLogger().warning("Cannot load image " + filename);
 		}
+		
 		return image;
 	}
 	
