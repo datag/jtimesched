@@ -54,6 +54,7 @@ import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
+import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -310,24 +311,26 @@ public class JTimeSchedFrame extends JFrame {
 		this.setVisible(this.initiallyVisible);
 	}
 	
-	public static URL getImageResource(String filename) {
+	public static Image getImageResource(String filename) {
 		String path = JTimeSchedApp.IMAGES_PATH + filename;
 		URL resFile = JTimeSchedFrame.class.getResource("/" + path);
+		Image image = null;
 		
-		// loading from JAR failed? Try local data directory
+		// resource from JAR failed? Try local data directory
 		if (resFile == null) {
 			try {
-				resFile = new URL("file://" + new File(path).getCanonicalPath());
-			} catch (Exception e) {
-				// print stack-trace and ignore error
-				e.printStackTrace();
+				image = ImageIO.read(new File(path));
+			} catch (IOException e) {
+				JTimeSchedApp.getLogger().severe("Cannot load image " + filename);
 			}
+		} else {
+			image = Toolkit.getDefaultToolkit().getImage(resFile);
 		}
-		return resFile;
+		return image;
 	}
 	
 	public static Image getImage(String filename) {
-		return Toolkit.getDefaultToolkit().getImage(JTimeSchedFrame.getImageResource(filename));
+		return JTimeSchedFrame.getImageResource(filename);
 	}
 	
 	public static ImageIcon getImageIcon(String filename) {
