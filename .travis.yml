@@ -1,6 +1,7 @@
 language: java
+sudo: false
 
 script: ant -Dversion="travis-build"
 
-after_script: jar -tvf dist/jTimeSched.jar
+after_script: jar -tf dist/jTimeSched.jar
 
